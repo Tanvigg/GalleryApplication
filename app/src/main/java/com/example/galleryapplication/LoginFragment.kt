@@ -24,12 +24,12 @@ import kotlinx.android.synthetic.main.fragment_login.view.*
  * A simple [Fragment] subclass.
  */
 class LoginFragment : Fragment() {
-    private var mAuth: FirebaseAuth? = null
-    private var listener: FirebaseAuth.AuthStateListener? = null
-    private var email: String? = null
-    private var password: String? = null
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var listener: FirebaseAuth.AuthStateListener
+    private lateinit var email: String
+    private lateinit var password: String
     private val TAG: String = "LoginFragment"
-    private var mGoogleSignInClient: GoogleSignInClient? = null
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN: Int = 123
     private val forgetPasswordFragment = ForgetPasswordFragment()
 
@@ -43,7 +43,7 @@ class LoginFragment : Fragment() {
 
         mAuth = FirebaseAuth.getInstance()
 
-        if (mAuth!!.currentUser != null) {
+        if (mAuth.currentUser != null) {
             startActivity(Intent(context, GalleryActivity::class.java))
         }
 
@@ -56,7 +56,7 @@ class LoginFragment : Fragment() {
                 Toast.makeText(context, "Please enter Password", Toast.LENGTH_SHORT).show()
 
             //authenticate user
-            mAuth!!.signInWithEmailAndPassword(email!!, password!!)
+            mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Log.d(TAG, "signInWithEmail:success")
@@ -86,7 +86,7 @@ class LoginFragment : Fragment() {
         mGoogleSignInClient = GoogleSignIn.getClient(context!!, gso)
 
         listener = FirebaseAuth.AuthStateListener { firebaseAuth: FirebaseAuth ->
-            var user: FirebaseUser? = firebaseAuth.currentUser
+            val user: FirebaseUser? = firebaseAuth.currentUser
             if (user != null)
                 Log.d(TAG, "onAuthStateChanged:signed_in:" + user.uid)
             else {
@@ -102,17 +102,17 @@ class LoginFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        mAuth!!.addAuthStateListener { listener }
+        mAuth.addAuthStateListener { listener }
     }
 
     override fun onStop() {
         super.onStop()
-        mAuth!!.removeAuthStateListener { listener }
+        mAuth.removeAuthStateListener { listener }
     }
 
 
     private fun signIn() {
-        var intent: Intent = mGoogleSignInClient!!.signInIntent
+        val intent: Intent = mGoogleSignInClient!!.signInIntent
         startActivityForResult(intent, RC_SIGN_IN)
     }
 
@@ -122,7 +122,7 @@ class LoginFragment : Fragment() {
             val result: GoogleSignInResult? =
                 Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result!!.isSuccess) {
-                var account: GoogleSignInAccount? = result!!.signInAccount
+                val account: GoogleSignInAccount? = result.signInAccount
                 firebaseAuthWithGoogle(account)
             } else {
                 Log.e(TAG, "Google sign in failed")
@@ -135,8 +135,8 @@ class LoginFragment : Fragment() {
         Log.d(TAG, "firebaseAuthWithGoogle:" + account!!.id)
         Log.d("firebaseAuthWithGoogle:", account.photoUrl.toString())
 
-        var authCredential: AuthCredential = GoogleAuthProvider.getCredential(account.idToken, null)
-        mAuth!!.signInWithCredential(authCredential).addOnCompleteListener { task ->
+        val authCredential: AuthCredential = GoogleAuthProvider.getCredential(account.idToken, null)
+        mAuth.signInWithCredential(authCredential).addOnCompleteListener { task ->
 
             if (task.isSuccessful) {
                 var intent = Intent(context, GalleryActivity::class.java)

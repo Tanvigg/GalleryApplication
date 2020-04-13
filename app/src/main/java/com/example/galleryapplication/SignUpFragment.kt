@@ -37,16 +37,16 @@ import java.util.*
 
 
 class SignUpFragment : Fragment() {
-    private var mAuth: FirebaseAuth? = null
-    private var userProfileImageRef: StorageReference? = null
-    private var currentUserId: String? = null
-    private var db: FirebaseFirestore? = null
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var userProfileImageRef: StorageReference
+    private lateinit var currentUserId: String
+    private lateinit var db: FirebaseFirestore
 
     private val TAG: String = "SignUpActivity"
 
-    private var email: String? = null
-    private var password: String? = null
-    private var name: String? = null
+    private lateinit var email: String
+    private lateinit var password: String
+    private lateinit var name: String
 
     private val CAMERA_REQUEST = 188
     private val GALLERY = 1
@@ -159,7 +159,7 @@ class SignUpFragment : Fragment() {
 
                     userProfileImage.setImageBitmap(bitmap)
                     val filePath: StorageReference =
-                        userProfileImageRef!!.child(currentUserId.toString() + ".jpg")
+                        userProfileImageRef.child(currentUserId.toString() + ".jpg")
 
                     filePath.putFile(contentUri!!).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
@@ -173,7 +173,7 @@ class SignUpFragment : Fragment() {
 
                             })
                         } else {
-                            var message: String = task.exception.toString()
+                            val message: String = task.exception.toString()
                             Toast.makeText(context, "Error: $message", Toast.LENGTH_SHORT)
                                 .show()
                         }
@@ -221,7 +221,7 @@ class SignUpFragment : Fragment() {
 
 
     private fun validateEmail(): Boolean {
-        var value = signup_email?.text.toString()
+        var value = signup_email.text.toString()
         val pattern: String =
             "^[a-zA-Z0-9_!#\$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\$"
         if (value.isEmpty()) {
@@ -237,7 +237,7 @@ class SignUpFragment : Fragment() {
     }
 
     private fun validatePassword(): Boolean {
-        val value = signup_password?.text.toString()
+        val value = signup_password.text.toString()
         val pattern: String = "^(?=.*\\d).{6,16}\$"
         //(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
         //{6,16}          : This limits the length of password from minimum 6 letters to maximum 16 letters.
@@ -255,7 +255,7 @@ class SignUpFragment : Fragment() {
     }
 
     private fun validateName(): Boolean {
-        val value = signup_name?.text.toString()
+        val value = signup_name.text.toString()
         if (value.isEmpty()) {
             signup_name.setError("Field can't be Empty")
             return false
@@ -269,21 +269,21 @@ class SignUpFragment : Fragment() {
         if (!validateName() || !validateEmail() || !validatePassword()) {
             return
         }
-        name = signup_name?.text.toString()
-        email = signup_email?.text.toString()
-        password = signup_password?.text.toString()
+        name = signup_name.text.toString()
+        email = signup_email.text.toString()
+        password = signup_password.text.toString()
 
-        mAuth!!.createUserWithEmailAndPassword(email!!, password!!)
+        mAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
 
                 if (task.isSuccessful) {
-                    currentUserId = mAuth!!.currentUser!!.uid
+                    currentUserId = mAuth.currentUser!!.uid
 
                     val documentReference: DocumentReference? =
-                        db?.collection("users")?.document(currentUserId.toString())
+                        db.collection("users").document(currentUserId.toString())
 
-                    userHashMap.put("Name", name!!)
-                    userHashMap.put("Email", email!!)
+                    userHashMap.put("Name", name)
+                    userHashMap.put("Email", email)
                     userHashMap.put("Image", downloadUrl!!)
                     documentReference?.set(userHashMap)?.addOnCompleteListener { task ->
                         if (task.isSuccessful) Toast.makeText(
