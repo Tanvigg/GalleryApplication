@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Gallery Application</string>
+    <string name="forget_password">Forget password?</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="remeber_Checkbox">Remember me and keep me Logged in</string>
+    <string name="google">"       SIGN IN WITH GOOGLE"</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="name">Name</string>
+    <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
+    <string name="hint_email">Email</string>
+    <string name="btn_reset_password">Reset Password</string>
+    <string name="btn_back">Back</string>
+    <string name="welcome_in">Welcome back,</string>
+    <string name="sign_in">Sign in to Continue"</string>
+    <string name="get_on">Hey,get on board</string>
+    <string name="sign_up">Sign up to Continue</string>
+
+
+</resources>
