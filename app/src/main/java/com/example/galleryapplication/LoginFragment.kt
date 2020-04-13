@@ -45,6 +45,7 @@ class LoginFragment : Fragment() {
 
         if (mAuth.currentUser != null) {
             startActivity(Intent(context, GalleryActivity::class.java))
+            activity!!.finish()
         }
 
         output.button_signIn.setOnClickListener {
@@ -61,6 +62,7 @@ class LoginFragment : Fragment() {
                     if (task.isSuccessful) {
                         Log.d(TAG, "signInWithEmail:success")
                         startActivity(Intent(context, GalleryActivity::class.java))
+                        activity!!.finish()
                     } else {
                         Log.d(TAG, "signInWithEmail:Failed")
                         Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
