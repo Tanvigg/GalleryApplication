@@ -4,7 +4,8 @@
     <color name="colorPrimaryDark">#183a4f</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="one">#F1F1F1</color>
-    <color name="two">#346464</color>
+    <color name="App_theme_color">#346464</color>
+    <color name="Login_button_onClick_color">#3E7575</color>
     <color name="three">#8BA0A0</color>
     <color name="four">#f09a24</color>
     <color name="five">#77787D</color>

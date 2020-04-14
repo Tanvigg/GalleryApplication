@@ -18,7 +18,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.android.synthetic.main.fragment_login.progressbar
 import kotlinx.android.synthetic.main.fragment_login.view.*
+import kotlinx.android.synthetic.main.fragment_sign_up.*
 
 /**
  * A simple [Fragment] subclass.
@@ -51,24 +53,34 @@ class LoginFragment : Fragment() {
         output.button_signIn.setOnClickListener {
             email = login_email.text.toString()
             password = login_password.text.toString()
-            if (TextUtils.isEmpty(email))
-                Toast.makeText(context, "Please enter Email id", Toast.LENGTH_SHORT).show()
-            else if (TextUtils.isEmpty(password))
-                Toast.makeText(context, "Please enter Password", Toast.LENGTH_SHORT).show()
 
-            //authenticate user
-            mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Log.d(TAG, "signInWithEmail:success")
-                        startActivity(Intent(context, GalleryActivity::class.java))
-                        activity!!.finish()
-                    } else {
-                        Log.d(TAG, "signInWithEmail:Failed")
-                        Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
+            progressbar.visibility = View.VISIBLE
+
+
+            if (TextUtils.isEmpty(email)) {
+                login_email.setError("Please enter Email d")
+
+            } else if (TextUtils.isEmpty(password)) {
+                login_password.setError("Please enter Password")
+
+            } else {
+                //authenticate user
+                mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            progressbar.visibility = View.VISIBLE
+                            Log.d(TAG, "signInWithEmail:success")
+                            Toast.makeText(context,"Welcome!",Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(context, GalleryActivity::class.java))
+                            activity!!.finish()
+                        } else {
+                            Log.d(TAG, "signInWithEmail:Failed")
+                            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                }
+            }
         }
+
 
         output.forget.setOnClickListener {
 

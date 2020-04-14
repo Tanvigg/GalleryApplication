@@ -100,10 +100,7 @@ class SignUpFragment : Fragment() {
 
 
     private fun choosePhotoFromGallery() {
-        val galleryIntent = Intent(
-            Intent.ACTION_PICK,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        )
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, GALLERY)
     }
 
@@ -138,6 +135,7 @@ class SignUpFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
             val photo: Bitmap = data?.extras?.get("data") as Bitmap
             userProfileImage.setImageBitmap(photo)
@@ -146,7 +144,6 @@ class SignUpFragment : Fragment() {
 
         } else if (requestCode == GALLERY && resultCode == RESULT_OK) {
             if (data != null) {
-
                 val contentUri: Uri? = data.data
 
                 try {
@@ -158,10 +155,12 @@ class SignUpFragment : Fragment() {
 
 
                     userProfileImage.setImageBitmap(bitmap)
+
                     val filePath: StorageReference =
-                        userProfileImageRef.child(currentUserId.toString() + ".jpg")
+                        userProfileImageRef.child("Image" + contentUri!!.lastPathSegment)
 
                     filePath.putFile(contentUri!!).addOnCompleteListener { task ->
+
                         if (task.isSuccessful) {
                             Toast.makeText(
                                 context,
@@ -187,130 +186,150 @@ class SignUpFragment : Fragment() {
                     Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show()
 
                 }
+
             }
         }
     }
 
 
-    private fun saveImage(bitmap: Bitmap): String {
-        val bytes = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes)
-        val wallpaperDirectory =
-            File(Environment.getExternalStorageDirectory().absolutePath.toString() + IMAGE_DIRECTORY)
-        if (!wallpaperDirectory.exists()) {
-            wallpaperDirectory.mkdir()
+            private fun saveImage(bitmap: Bitmap): String {
+                val bytes = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes)
+                val wallpaperDirectory =
+                    File(Environment.getExternalStorageDirectory().absolutePath.toString() + IMAGE_DIRECTORY)
+                if (!wallpaperDirectory.exists()) {
+                    wallpaperDirectory.mkdir()
 
-        }
-        try {
-            val f =
-                File(wallpaperDirectory, Calendar.getInstance().timeInMillis.toString() + ".jpg")
-            f.createNewFile()
-            val fo = FileOutputStream(f)
-            fo.write(bytes.toByteArray())
-            MediaScannerConnection.scanFile(context, arrayOf(f.path), arrayOf("image/jpeg"), null)
-            fo.close()
-            Log.d("TAG", "File Saved::---&gt;" + f.absolutePath)
-            return f.absolutePath
-        } catch (e1: IOException) {
-            e1.printStackTrace()
+                }
+                try {
+                    val f =
+                        File(
+                            wallpaperDirectory,
+                            Calendar.getInstance().timeInMillis.toString() + ".jpg"
+                        )
+                    f.createNewFile()
+                    val fo = FileOutputStream(f)
+                    fo.write(bytes.toByteArray())
+                    MediaScannerConnection.scanFile(
+                        context,
+                        arrayOf(f.path),
+                        arrayOf("image/jpeg"),
+                        null
+                    )
+                    fo.close()
+                    Log.d("TAG", "File Saved::---&gt;" + f.absolutePath)
+                    return f.absolutePath
+                } catch (e1: IOException) {
+                    e1.printStackTrace()
 
-        }
-        return ""
+                }
+                return ""
 
-    }
+            }
 
 
-    private fun validateEmail(): Boolean {
-        var value = signup_email.text.toString()
-        val pattern: String =
-            "^[a-zA-Z0-9_!#\$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\$"
-        if (value.isEmpty()) {
-            signup_email.setError("Field can't be Empty")
-            return false
-        } else if (!value.matches(pattern.toRegex())) {
-            signup_email.setError("Pattern doesn't match")
-            return false
-        } else {
-            signup_email.setError(null)
-            return true
-        }
-    }
-
-    private fun validatePassword(): Boolean {
-        val value = signup_password.text.toString()
-        val pattern: String = "^(?=.*\\d).{6,16}\$"
-        //(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
-        //{6,16}          : This limits the length of password from minimum 6 letters to maximum 16 letters.
-        if (value.isEmpty()) {
-            signup_password.setError("Field can't be Empty")
-            return false
-        } else if (!value.matches(pattern.toRegex())) {
-            signup_password.setError("Pattern doesn't match")
-            return false
-        } else {
-            signup_password.setError(null)
-            return true
-
-        }
-    }
-
-    private fun validateName(): Boolean {
-        val value = signup_name.text.toString()
-        if (value.isEmpty()) {
-            signup_name.setError("Field can't be Empty")
-            return false
-        } else {
-            signup_name.setError(null)
-            return true
-        }
-    }
-
-    private fun saveUserDetails() {
-        if (!validateName() || !validateEmail() || !validatePassword()) {
-            return
-        }
-        name = signup_name.text.toString()
-        email = signup_email.text.toString()
-        password = signup_password.text.toString()
-
-        mAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-
-                if (task.isSuccessful) {
-                    currentUserId = mAuth.currentUser!!.uid
-
-                    val documentReference: DocumentReference? =
-                        db.collection("users").document(currentUserId.toString())
-
-                    userHashMap.put("Name", name)
-                    userHashMap.put("Email", email)
-                    userHashMap.put("Image", downloadUrl!!)
-                    documentReference?.set(userHashMap)?.addOnCompleteListener { task ->
-                        if (task.isSuccessful) Toast.makeText(
-                            context,
-                            "data Inserted Successfully!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        else {
-                            Toast.makeText(context, "data Insertion Failed!", Toast.LENGTH_SHORT)
-                                .show()
-
-                        }
-                    }
-
-                    Log.d(TAG, "createuserwithemailpassword:Successful")
-                    var user: FirebaseUser? = mAuth!!.currentUser
-                    startActivity(Intent(context, GalleryActivity::class.java))
-
+            private fun validateEmail(): Boolean {
+                var value = signup_email.text.toString()
+                val pattern: String =
+                    "^[a-zA-Z0-9_!#\$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\$"
+                if (value.isEmpty()) {
+                    signup_email.setError("Please Enter Email ")
+                    return false
+                } else if (!value.matches(pattern.toRegex())) {
+                    signup_email.setError("Invalid email Address")
+                    return false
                 } else {
-                    Log.d(TAG, "createuserwithemailpassword:Failed", task.exception)
-                    Toast.makeText(context, "Authentication Failed", Toast.LENGTH_SHORT).show()
+                    signup_email.setError(null)
+                    return true
                 }
             }
-    }
+
+            private fun validatePassword(): Boolean {
+                val value = signup_password.text.toString()
+                val pattern: String = "^(?=.*\\d).{6,16}\$"
+                //(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
+                //{6,16}          : This limits the length of password from minimum 6 letters to maximum 16 letters.
+                if (value.isEmpty()) {
+                    signup_password.setError("Please Enter Password")
+                    return false
+                } else if (!value.matches(pattern.toRegex())) {
+                    signup_password.setError("Invalid Password")
+                    return false
+                } else {
+                    signup_password.setError(null)
+                    return true
+
+                }
+            }
+
+            private fun validateName(): Boolean {
+                val value = signup_name.text.toString()
+                if (value.isEmpty()) {
+                    signup_name.setError("Please Enter Name")
+                    return false
+                } else {
+                    signup_name.setError(null)
+                    return true
+                }
+            }
+
+            private fun saveUserDetails() {
+                if (!validateName() || !validateEmail() || !validatePassword()) {
+                    return
+                }
+                name = signup_name.text.toString()
+                email = signup_email.text.toString()
+                password = signup_password.text.toString()
+
+                progressbar.visibility = View.VISIBLE
+
+                mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+
+                        if (task.isSuccessful) {
+                            currentUserId = mAuth.currentUser!!.uid
+
+                            val documentReference: DocumentReference? =
+                                db.collection("users").document(currentUserId.toString())
+
+                            userHashMap.put("Name", name)
+                            userHashMap.put("Email", email)
+                            if (downloadUrl != null)
+                                userHashMap.put("Image", downloadUrl!!)
+                            else
+                                userHashMap.put("Image", R.drawable.profile_image.toString())
+                            documentReference?.set(userHashMap)?.addOnCompleteListener { task ->
+                                progressbar.visibility = View.GONE
+                                if (task.isSuccessful) Toast.makeText(
+                                    context,
+                                    "Welcome!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                else {
+                                    Toast.makeText(
+                                        context,
+                                        "data Insertion Failed!",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+
+                                }
+                            }
+
+                            Log.d(TAG, "createuserwithemailpassword:Successful")
+                            var user: FirebaseUser? = mAuth.currentUser
+                            startActivity(Intent(context, GalleryActivity::class.java))
+
+                        } else {
+                            Log.d(TAG, "createuserwithemailpassword:Failed", task.exception)
+                            Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+            }
 
 
-}
+        }
 
 
 
