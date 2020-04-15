@@ -311,6 +311,8 @@ class SignUpFragment : Fragment() {
                     val documentReference: DocumentReference? =
                         db.collection("users").document(currentUserId.toString())
 
+
+
                     userHashMap.put("Name", name)
                     userHashMap.put("Email", email)
 
