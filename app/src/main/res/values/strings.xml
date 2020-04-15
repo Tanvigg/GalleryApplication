@@ -19,6 +19,7 @@
     <string name="sign_up">Sign up to Continue</string>
     <string name="menu_sign_up"><u>SiGN_UP</u></string>
     <string name="menu_sign_in">SIGN_IN</string>
+    <string name="change">Change Profile Photo</string>
 
 
 </resources>

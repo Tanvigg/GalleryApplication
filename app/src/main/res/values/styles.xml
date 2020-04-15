@@ -25,6 +25,9 @@
         <item name="android:activatedBackgroundIndicator">@color/grey_40</item>
     </style>
 
+    <style name="MyAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
 
 
 </resources>

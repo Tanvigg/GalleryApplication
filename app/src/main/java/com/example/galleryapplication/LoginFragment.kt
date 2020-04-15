@@ -70,7 +70,7 @@ class LoginFragment : Fragment() {
                         if (task.isSuccessful) {
                             progressbar.visibility = View.VISIBLE
                             Log.d(TAG, "signInWithEmail:success")
-                            Toast.makeText(context,"Welcome!",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Welcome!", Toast.LENGTH_SHORT).show()
                             startActivity(Intent(context, GalleryActivity::class.java))
                             activity!!.finish()
                         } else {
@@ -84,8 +84,8 @@ class LoginFragment : Fragment() {
 
         output.forget.setOnClickListener {
 
-             val transaction = fragmentManager!!.beginTransaction()
-            transaction.replace(R.id.container,forgetPasswordFragment,"ForgetFragment").commit()
+            val transaction = fragmentManager!!.beginTransaction()
+            transaction.replace(R.id.container, forgetPasswordFragment, "ForgetFragment").commit()
             transaction.addToBackStack(null)
 
         }
