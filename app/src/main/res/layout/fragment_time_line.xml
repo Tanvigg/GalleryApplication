@@ -5,4 +5,20 @@
     android:layout_height="match_parent"
     tools:context=".TimeLineFragment">
 
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/timeline_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"/>
+
+
+    <ProgressBar
+        android:id="@+id/progressbar_timeline"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+
 </FrameLayout>

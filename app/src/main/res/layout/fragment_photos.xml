@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CategoryFragment"
-    android:id="@+id/container_category">
+    tools:context=".PhotosFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/favourites_recycleView"
+        android:id="@+id/photos_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        />
+        android:layout_height="match_parent" />
+
 
     <ProgressBar
-        android:id="@+id/progressbar_favs"
+        android:id="@+id/progressbar_photos"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"

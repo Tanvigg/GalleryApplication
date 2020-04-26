@@ -55,6 +55,7 @@ class ProfileFragment : Fragment() {
     private lateinit var loadingBar: ProgressDialog
     private val GALLERY = 1
     private val IMAGE_DIRECTORY = "/YourDirectName"
+
     private lateinit var contentUri: Uri
     private val CAMERA_REQUEST = 188
     private val MY_CAMERA_PERMISSION_REQUEST = 100
@@ -79,6 +80,7 @@ class ProfileFragment : Fragment() {
         db = FirebaseFirestore.getInstance()
         userProfileImageRef = FirebaseStorage.getInstance().reference.child("Profile Images")
         loadingBar = ProgressDialog(context, R.style.MyAlertDialogStyle)
+
 
 
         //in order to fetch user details stored in firebase cloud database
@@ -340,7 +342,10 @@ class ProfileFragment : Fragment() {
 
     }
 
-    /*private fun ballspinfadeloadergone() {
+
+
+
+   /* private fun ballspinfadeloadergone() {
         findViewById(R.id.BallSpinFadeLoader).visibility = GONE
     }
 

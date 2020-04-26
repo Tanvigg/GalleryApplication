@@ -38,6 +38,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -170,7 +171,7 @@ class SignUpFragment : Fragment() {
                 val bitmap: Bitmap =
                     MediaStore.Images.Media.getBitmap(context?.contentResolver, contentUri)
 
-                var path: String = saveImage(bitmap)
+                // var path: String = saveImage(bitmap)
                 Toast.makeText(context, "Image Saved", Toast.LENGTH_SHORT).show()
                 userProfileImage.setImageBitmap(bitmap)
             }
@@ -209,7 +210,7 @@ class SignUpFragment : Fragment() {
     }
 
 
-    private fun saveImage(bitmap: Bitmap): String {
+    /*private fun saveImage(bitmap: Bitmap): String {
         val bytes = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes)
         val wallpaperDirectory =
@@ -242,7 +243,7 @@ class SignUpFragment : Fragment() {
         }
         return ""
 
-    }
+    }*/
 
 
     private fun validateEmail(): Boolean {

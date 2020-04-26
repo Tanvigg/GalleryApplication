@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar"
+        android:id="@+id/gallery_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
@@ -16,12 +16,14 @@
 
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar_gallery"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/App_theme_color"
         app:layout_collapseMode="pin"
-        app:titleTextColor="#ffffff" />
+        app:titleTextColor="#ffffff"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        />
 
     </com.google.android.material.appbar.AppBarLayout>
 
