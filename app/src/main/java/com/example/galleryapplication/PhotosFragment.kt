@@ -122,8 +122,6 @@ class PhotosFragment : Fragment() {
                 if (snapshot != null) {
                     output.progressbar_photos.visibility = View.GONE
 
-
-
                     val documentChangeList: List<DocumentChange> = snapshot.documentChanges
                     for (documentChange: DocumentChange in documentChangeList) {
                         documentChange.document.data
@@ -277,11 +275,11 @@ class PhotosFragment : Fragment() {
         val currentTimeInMilis = calender.timeInMillis.toString()
         val formatter = SimpleDateFormat("MMM dd,yyyy")
         val date = formatter.format(Date())
+        val  isFavourite  = false
 
 
         Log.d("date", date)
         image = Image(downloadUrl!!, currentTimeInMilis, date)
-        Log.d("photosData", currentTimeInMilis)
 
         db.collection("users").document(currentUserId).collection("categories")
             .document(categoryName).collection("images").document(currentTimeInMilis).set(image)
