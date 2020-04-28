@@ -254,9 +254,9 @@ class ProfileFragment : Fragment() {
         loadingBar.setMessage("please wait, while we are getting your Details...")
         loadingBar.setCanceledOnTouchOutside(false)
         loadingBar.show()
-        // ballspinfadeloader()
+
         val documentReference: DocumentReference? =
-            db.collection("users").document(currentUserId.toString())
+            db.collection("users").document(currentUserId)
         documentReference!!.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val doc: DocumentSnapshot = task.result!!
@@ -266,7 +266,6 @@ class ProfileFragment : Fragment() {
                     userName.isEnabled = false
                     userEmail.setText(doc.getData()!!.get("Email").toString())
                     userEmail.isEnabled = false
-                    // ballspinfadeloadergone()
                     Picasso.get().load(doc.data!!.get("ProfileImage").toString()).into(userProfileImage)
 
                 } else {
@@ -340,18 +339,4 @@ class ProfileFragment : Fragment() {
 
     }
 
-
-
-
-   /* private fun ballspinfadeloadergone() {
-        findViewById(R.id.BallSpinFadeLoader).visibility = GONE
-    }
-
-
-
-
-
-    private fun ballspinfadeloader(){
-        findViewById(R.id.BallSpinFadeLoader).visibility = VISIBLE
-    }*/
 }

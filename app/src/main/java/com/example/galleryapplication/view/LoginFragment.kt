@@ -2,47 +2,35 @@ package com.example.galleryapplication.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.TextUtils
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
 import com.example.galleryapplication.viewmodel.FirebaseViewModel
-import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.*
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.progressbar
 import kotlinx.android.synthetic.main.fragment_login.view.*
 
-
 const val RC_SIGN_IN = 123
-
 class LoginFragment : Fragment(), View.OnClickListener {
     private var mAuth: FirebaseAuth? = null
     var TAG = LoginFragment::class.java.name
     private lateinit var mGoogleSignInClient: GoogleSignInClient
-    private val forgetPasswordFragment =
-        ForgetPasswordFragment()
-
+    private val forgetPasswordFragment = ForgetPasswordFragment()
     private val viewModel: FirebaseViewModel by lazy {
-        ViewModelProvider(this).get(FirebaseViewModel::class.java)
-    }
+        ViewModelProvider(this).get(FirebaseViewModel::class.java) }
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         val output: View = inflater.inflate(R.layout.fragment_login, container, false)
         mAuth = FirebaseAuth.getInstance()
 
@@ -113,6 +101,7 @@ class LoginFragment : Fragment(), View.OnClickListener {
                     val intent = Intent(context, GalleryActivity::class.java)
                     intent.putExtra("emailId", viewModel.account.email)
                     intent.putExtra("profilePic", viewModel.account.photoUrl)
+                    intent.putExtra("name",viewModel.account.displayName)
                     startActivity(intent)
                 }
 

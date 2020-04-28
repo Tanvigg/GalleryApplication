@@ -18,20 +18,26 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
 import com.example.galleryapplication.viewmodel.FirebaseViewModel
+import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
+import kotlinx.android.synthetic.main.fragment_sign_up.progressbar
 import kotlinx.android.synthetic.main.fragment_sign_up.view.*
 
 
-class SignUpFragment : Fragment() {
+class SignUpFragment : Fragment(), View.OnClickListener {
 
-    private val CAMERA_REQUEST = 188
+
     private val GALLERY = 1
     private val CAMERA_PERMISSION_REQUEST = 100
     private lateinit var contentUri: Uri
-    private lateinit var viewModel: FirebaseViewModel
+    private val CAMERA_REQUEST = 188
+    private val viewModel: FirebaseViewModel by lazy {
+        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -40,18 +46,20 @@ class SignUpFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        // Inflate the layout for this fragment
         setHasOptionsMenu(true)
         val output: View = inflater.inflate(R.layout.fragment_sign_up, container, false)
-        output.sign_up.setOnClickListener {
-            saveUserDetails()
-        }
-
-        output.frame.setOnClickListener {
-            requestProfileImage()
-        }
-
+        output.sign_up.setOnClickListener(this)
+        output.frame.setOnClickListener(this)
+        setObservers()
         return output
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onClick(v: View?) {
+        if (v == sign_up)
+            saveUserDetails()
+        else if (v == frame)
+            requestProfileImage()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -69,14 +77,13 @@ class SignUpFragment : Fragment() {
         builder.show()
     }
 
-
-    private fun choosePhotoFromGallery() {
+    fun choosePhotoFromGallery() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, GALLERY)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun takePhotoFromCamera() {
+    fun takePhotoFromCamera() {
         if (context?.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(
                 arrayOf(
@@ -90,7 +97,6 @@ class SignUpFragment : Fragment() {
             startActivityForResult(cameraIntent, CAMERA_REQUEST)
         }
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -123,95 +129,57 @@ class SignUpFragment : Fragment() {
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
             val bitmap: Bitmap = data?.extras?.get("data") as Bitmap
             userProfileImage.setImageBitmap(bitmap)
-
             //calling method to obtain uri from bitmap
             contentUri = getImageUri(context!!, bitmap)
 
         } else if (requestCode == GALLERY && resultCode == RESULT_OK) {
             if (data != null) {
                 contentUri = data.data!!
-
-                val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, contentUri)
+                val bitmap: Bitmap =
+                    MediaStore.Images.Media.getBitmap(context?.contentResolver, contentUri)
                 userProfileImage.setImageBitmap(bitmap)
             }
         }
     }
 
-
-
-    private fun validateEmail(): Boolean {
-        val value = signup_email.text.toString()
-        val pattern: String =
-            "^[a-zA-Z0-9_!#\$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\$"
-        if (value.isEmpty()) {
-            signup_email.setError("Please Enter Email ")
-            return false
-        } else if (!value.matches(pattern.toRegex())) {
-            signup_email.error = "Invalid email Address"
-            return false
-        } else {
-            signup_email.error = null
-            return true
-        }
-    }
-
-    private fun validatePassword(): Boolean {
-        val value = signup_password.text.toString()
-        val pattern: String = "^(?=.*\\d).{6,16}\$"
-        //(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
-        //{6,16}          : This limits the length of password from minimum 6 letters to maximum 16 letters.
-        if (value.isEmpty()) {
-            signup_password.error = "Please Enter Password"
-            return false
-        } else if (!value.matches(pattern.toRegex())) {
-            signup_password.error = "Invalid Password"
-            return false
-        } else {
-            signup_password.error = null
-            return true
-
-        }
-    }
-
-    private fun validateName(): Boolean {
-        val value = signup_name.text.toString()
-        if (value.isEmpty()) {
-            signup_name.error = "Please Enter Name"
-            return false
-        } else {
-            signup_name.error = null
-            return true
-        }
-    }
-
     private fun saveUserDetails() {
-        if (!validateName() || !validateEmail() || !validatePassword()) {
-            return
-        }
         val name = signup_name.text.toString()
         val email = signup_email.text.toString()
         val password = signup_password.text.toString()
 
+
         progressbar.visibility = View.VISIBLE
-        viewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
-        if(viewModel.signUp(name,email,password,contentUri)){
+        if (viewModel.signUp(name, email, password, contentUri)) {
             startActivity(Intent(context, GalleryActivity::class.java))
-        }else{
-            Toast.makeText(context,"No Internet Connection", Toast.LENGTH_SHORT).show()
+            progressbar.visibility = View.GONE
+        } else {
+            progressbar.visibility = View.GONE
+            context!!.showToast("No Internet Connection")
         }
-        progressbar.visibility = View.GONE
+
     }
 
 
     fun getImageUri(context: Context, inImage: Bitmap): Uri {
         val outImage: Bitmap = Bitmap.createScaledBitmap(inImage, 2000, 2000, true)
-        val path: String = MediaStore.Images.Media.insertImage(context.contentResolver, outImage, "Title", null)
+        val path: String =
+            MediaStore.Images.Media.insertImage(context.contentResolver, outImage, "Title", null)
         return Uri.parse(path)
     }
 
+    private fun setObservers() {
+        viewModel.getEmailError().observe(this, Observer {
+            signup_email.error = it
+        })
+        viewModel.getPasswordError().observe(this, Observer {
+            signup_password.error = it
+        })
+        viewModel.getNameError().observe(this, Observer {
+            signup_name.error = it
+        })
 
+    }
 }
-
 
 
 
