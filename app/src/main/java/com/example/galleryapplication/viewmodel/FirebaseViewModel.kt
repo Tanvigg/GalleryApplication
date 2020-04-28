@@ -13,7 +13,9 @@ import com.example.galleryapplication.view.showToast
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 
@@ -119,15 +121,32 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
 
 
     fun signUp(name: String, email: String, password: String, userImage: Uri):Boolean {
-        if(!validateEmail(email)|| !validatePassword(password) || !validateName(name)){
+        if(!validateName(name) || !validateEmail(email)|| !validatePassword(password)){
             return false
         }else{
             return repository.signUp(name, email, password, userImage)
         }
     }
 
-    fun passwordReset(email: String) {
-        return repository.passwordReset(email)
+    fun passwordReset(email: String)  {
+        if(TextUtils.isEmpty(email)) {
+            emailError.value = "Enter your registered Email Id"
+
+        }
+        else {
+            loginState.value = LoginState.SHOW_PROGRESS
+            repository.passwordReset(email).addOnSuccessListener {
+                context.showToast("We have sent you instructions to reset your password!")
+                loginState.value = LoginState.HIDE_PROGRESS
+            }
+                .addOnFailureListener{
+                    context.showToast("Failed")
+                    loginState.value = LoginState.HIDE_PROGRESS
+
+
+
+                }
+        }
     }
 
 

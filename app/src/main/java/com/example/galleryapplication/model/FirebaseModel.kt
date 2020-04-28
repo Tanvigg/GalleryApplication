@@ -77,21 +77,9 @@ class FirebaseModel {
         db.collection("users").document(currentUserId).set(userHashMap)
     }
 
-    fun passwordReset(email: String) {
-        auth.sendPasswordResetEmail(email).addOnSuccessListener {
-            /*Toast.makeText(
-                context,
-                "We have sent you instructions to reset your password!",
-                Toast.LENGTH_SHORT
-            ).show()
-*/
-
-        }
-            .addOnFailureListener {
-               // Toast.makeText(context, "Failed to send reset email!", Toast.LENGTH_SHORT).show()
-
-
-            }
+    fun passwordReset(email: String) : Task<AuthResult> {
+        val fAuth:Task<AuthResult> = auth.sendPasswordResetEmail(email)
+        return fAuth
     }
 
 }

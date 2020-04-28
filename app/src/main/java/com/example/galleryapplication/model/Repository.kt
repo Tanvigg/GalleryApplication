@@ -1,8 +1,9 @@
 package com.example.galleryapplication.model
 
 import android.net.Uri
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.AuthResult
 
 class Repository {
     private var firebaseModel = FirebaseModel()
@@ -16,4 +17,5 @@ class Repository {
         firebaseModel.signUp(name, email, password, userImage)
 
     fun passwordReset(email: String) =  firebaseModel.passwordReset(email)
+
 }
