@@ -1,4 +1,4 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 class Category(var categoryName: String, var categoryImage: String) {
 

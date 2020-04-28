@@ -1,4 +1,4 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 import android.Manifest
 import android.app.Activity
@@ -23,7 +23,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import com.example.galleryapplication.view.MainActivity
+import com.example.galleryapplication.R
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
@@ -75,7 +75,9 @@ class ProfileFragment : Fragment() {
         currentUserId = mAuth.currentUser!!.uid
         db = FirebaseFirestore.getInstance()
         userProfileImageRef = FirebaseStorage.getInstance().reference.child("Profile Images")
-        loadingBar = ProgressDialog(context, R.style.MyAlertDialogStyle)
+        loadingBar = ProgressDialog(context,
+            R.style.MyAlertDialogStyle
+        )
 
 
 
@@ -265,7 +267,7 @@ class ProfileFragment : Fragment() {
                     userEmail.setText(doc.getData()!!.get("Email").toString())
                     userEmail.isEnabled = false
                     // ballspinfadeloadergone()
-                    Picasso.get().load(doc.data!!.get("Image").toString()).into(userProfileImage)
+                    Picasso.get().load(doc.data!!.get("ProfileImage").toString()).into(userProfileImage)
 
                 } else {
                     Log.d("Document", "NO DATA")

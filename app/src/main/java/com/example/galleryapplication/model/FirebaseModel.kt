@@ -1,11 +1,8 @@
 package com.example.galleryapplication.model
 
-import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
-import com.example.galleryapplication.GalleryActivity
 import com.example.galleryapplication.R
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
@@ -36,17 +33,17 @@ class FirebaseModel {
         return fAuth
     }
 
-    fun signUp(name: String, email: String, password: String, userImage: Uri) : Boolean {
+    fun signUp(name: String, email: String, password: String, userImage: Uri): Boolean {
         auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener {task ->
-                if(task.isSuccessful) {
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
                     uploadUser(userImage, name, email)
                 }
             }
         return true
     }
 
-    private fun uploadUser(userImage: Uri, name: String, email: String) {
+    fun uploadUser(userImage: Uri, name: String, email: String) {
         currentUserId = auth.currentUser!!.uid
         userProfileImageRef = FirebaseStorage.getInstance().reference.child("Profile Images")
 
@@ -65,7 +62,7 @@ class FirebaseModel {
         }
     }
 
-    private fun saveUserDataToFireStore(name: String, email: String) {
+    fun saveUserDataToFireStore(name: String, email: String) {
         val userHashMap = HashMap<String, String>()
         userHashMap.put("Name", name)
         userHashMap.put("Email", email)
@@ -78,6 +75,23 @@ class FirebaseModel {
 
         }
         db.collection("users").document(currentUserId).set(userHashMap)
+    }
+
+    fun passwordReset(email: String) {
+        auth.sendPasswordResetEmail(email).addOnSuccessListener {
+            /*Toast.makeText(
+                context,
+                "We have sent you instructions to reset your password!",
+                Toast.LENGTH_SHORT
+            ).show()
+*/
+
+        }
+            .addOnFailureListener {
+               // Toast.makeText(context, "Failed to send reset email!", Toast.LENGTH_SHORT).show()
+
+
+            }
     }
 
 }

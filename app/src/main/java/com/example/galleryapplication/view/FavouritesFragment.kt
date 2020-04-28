@@ -1,6 +1,5 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
-import android.app.ProgressDialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,13 +9,12 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.galleryapplication.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.fragment_category.*
 import kotlinx.android.synthetic.main.fragment_favourites.*
 import kotlinx.android.synthetic.main.fragment_favourites.view.*
-import kotlinx.android.synthetic.main.fragment_photos.view.*
 
 /**
  * A simple [Fragment] subclass.
@@ -76,13 +74,18 @@ class FavouritesFragment : Fragment() {
 
                     for (documentChange: DocumentChange in documentChangeList) {
                         documentChange.document.data
-                        val fetchedFav = FavouritesModel(
-                            (documentChange.document.get("image").toString()),
-                            documentChange.document.get("time").toString()
-                        )
+                        val fetchedFav =
+                            FavouritesModel(
+                                (documentChange.document.get("image").toString()),
+                                documentChange.document.get("time").toString()
+                            )
                         favList.add(fetchedFav)
                     }
-                    favAdapter = FavoutitesAdapter(context!!, favList)
+                    favAdapter =
+                        FavoutitesAdapter(
+                            context!!,
+                            favList
+                        )
                     favourites_recycleView.adapter = favAdapter
                 } else {
                     Log.d("TAG", "Query snapshot is null")

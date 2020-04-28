@@ -1,4 +1,4 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 import android.os.Bundle
 import android.text.TextUtils
@@ -7,16 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.example.galleryapplication.R
+import com.example.galleryapplication.viewmodel.FirebaseViewModel
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.fragment_forget_password.*
 import kotlinx.android.synthetic.main.fragment_forget_password.view.*
 
 /**
  * A simple [Fragment] subclass.
  */
 class ForgetPasswordFragment : Fragment() {
-    private var mAuth: FirebaseAuth? = null
-    private var email: String? = null
+    private lateinit var viewModel: FirebaseViewModel
+
 
 
     override fun onCreateView(
@@ -25,31 +27,18 @@ class ForgetPasswordFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val output: View = inflater.inflate(R.layout.fragment_forget_password, container, false)
-        mAuth = FirebaseAuth.getInstance()
-
 
         output.btn_reset_password.setOnClickListener(View.OnClickListener {
-            email = output.user_email.text.toString()
+            val email = output.user_email.text.toString()
+
             if (TextUtils.isEmpty(email)) {
                 Toast.makeText(context, "Enter your registered email id", Toast.LENGTH_SHORT).show()
             }
-            output.progressbar.setVisibility(View.VISIBLE)
-            mAuth!!.sendPasswordResetEmail(email!!).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(
-                        context,
-                        "We have sent you instructions to reset your password!",
-                        Toast.LENGTH_SHORT
-                    ).show()
 
-                } else {
-                    Toast.makeText(
-                        context, "Failed to send reset email!", Toast.LENGTH_SHORT).show()
-                }
-                output.progressbar.setVisibility(View.GONE)
-
-            }
-
+            output.progressbar.visibility = View.VISIBLE
+            viewModel = ViewModelProvider(this).get(FirebaseViewModel::class.java)
+            viewModel.passwordReset(email)
+            output.progressbar.setVisibility(View.GONE)
         })
         return output
     }

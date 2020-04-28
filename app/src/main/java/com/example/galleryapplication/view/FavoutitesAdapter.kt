@@ -1,12 +1,12 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.galleryapplication.R
 import com.squareup.picasso.Picasso
 
 class FavoutitesAdapter : RecyclerView.Adapter<FavoutitesAdapter.FavouritesViewHolder> {

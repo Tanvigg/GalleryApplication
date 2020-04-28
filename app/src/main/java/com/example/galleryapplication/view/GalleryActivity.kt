@@ -1,26 +1,32 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.example.galleryapplication.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.content_gallery.*
 
-class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener , CategoryFragment.OnDataPass , PhotosFragment.OnDataPass {
+class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener , CategoryFragment.OnDataPass ,
+    PhotosFragment.OnDataPass {
     private val manager: FragmentManager = supportFragmentManager
     private val transaction = manager.beginTransaction()
-    private val categoryFragment = CategoryFragment()
-    private val timeLineFragment = TimeLineFragment()
-    private val favouritesFragment = FavouritesFragment()
-    private val profileFragment = ProfileFragment()
-    private var photosFragment = PhotosFragment()
-    private var imageViewerFragment = ImageViewerFragment()
+    private val categoryFragment =
+        CategoryFragment()
+    private val timeLineFragment =
+        TimeLineFragment()
+    private val favouritesFragment =
+        FavouritesFragment()
+    private val profileFragment =
+        ProfileFragment()
+    private var photosFragment =
+        PhotosFragment()
+    private var imageViewerFragment =
+        ImageViewerFragment()
     private lateinit var catName : String
 
 
@@ -57,7 +63,7 @@ class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
             supportActionBar!!.title = "Favourites"
             transaction1.replace(R.id.container,favouritesFragment)
         }
-        else if(item.itemId ==  R.id.profile){
+        else if(item.itemId == R.id.profile){
             supportActionBar!!.title = "Profile"
             transaction1.replace(R.id.container,profileFragment)
         }

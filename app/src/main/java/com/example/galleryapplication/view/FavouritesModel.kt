@@ -1,4 +1,4 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 class FavouritesModel(val image : String,var time : String) {
 }

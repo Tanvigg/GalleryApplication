@@ -1,4 +1,4 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,13 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.galleryapplication.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import kotlinx.android.synthetic.main.fragment_category.view.*
 import kotlinx.android.synthetic.main.fragment_time_line.view.*
 
 /**
@@ -48,11 +46,19 @@ class TimeLineFragment : Fragment() {
         photosReference.listAll().addOnSuccessListener {
             for (i in it.items) {
                 i.metadata.addOnSuccessListener {
-                    val timeLineModel = TimeLineModel(i.downloadUrl, it.creationTimeMillis)
+                    val timeLineModel =
+                        TimeLineModel(
+                            i.downloadUrl,
+                            it.creationTimeMillis
+                        )
                     timeLineList.add(timeLineModel)
                     var tList : List<TimeLineModel>  = timeLineList.sortedByDescending {
                         it.timeStamp as Long }
-                    timeLineAdapter = TimeLineAdapter(context!!,tList)
+                    timeLineAdapter =
+                        TimeLineAdapter(
+                            context!!,
+                            tList
+                        )
                     output.timeline_recyclerView!!.adapter = timeLineAdapter
                 }
 

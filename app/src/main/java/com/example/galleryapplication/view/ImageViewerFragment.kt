@@ -1,22 +1,15 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.galleryapplication.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_image_viewer.*
 import kotlinx.android.synthetic.main.fragment_image_viewer.view.*
-import java.io.IOException
-import java.net.URL
 
 /**
  * A simple [Fragment] subclass.
@@ -82,7 +75,11 @@ class ImageViewerFragment : Fragment() {
     }
 
     private fun addToDatabase() {
-        val favouritesModel =  FavouritesModel(Image,TimeinMilis)
+        val favouritesModel =
+            FavouritesModel(
+                Image,
+                TimeinMilis
+            )
         db.collection("users").document(currentUserId).collection("Favourites").document(TimeinMilis).set(favouritesModel)
             .addOnCompleteListener { task ->
                 if(task.isSuccessful){

@@ -1,4 +1,4 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.galleryapplication.R
 import com.squareup.picasso.Picasso
 
 class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder> {
@@ -23,7 +24,9 @@ class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder> {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
         val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val rowlayout: View = layoutInflater.inflate(R.layout.image_row_layout, parent, false)
-        return ImageViewHolder(rowlayout)
+        return ImageViewHolder(
+            rowlayout
+        )
 
 
     }

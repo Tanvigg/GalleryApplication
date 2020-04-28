@@ -1,4 +1,4 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 interface CategoryClickListener {
     fun onCategoryClick(categoryName: String)

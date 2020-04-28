@@ -1,47 +1,33 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 import android.Manifest
 import android.app.Activity
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.os.Environment.getExternalStorageDirectory
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.galleryapplication.R
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
-import com.google.firebase.firestore.local.QueryResult
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import kotlinx.android.synthetic.main.fragment_category.*
-import kotlinx.android.synthetic.main.fragment_category.view.*
-import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.android.synthetic.main.fragment_photos.*
 import kotlinx.android.synthetic.main.fragment_photos.view.*
-import kotlinx.android.synthetic.main.fragment_sign_up.*
-import kotlinx.android.synthetic.main.fragment_sign_up.progressbar
 import java.io.*
-import java.net.URI
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -125,11 +111,12 @@ class PhotosFragment : Fragment() {
                     val documentChangeList: List<DocumentChange> = snapshot.documentChanges
                     for (documentChange: DocumentChange in documentChangeList) {
                         documentChange.document.data
-                        val fetchedImages = Image(
-                            documentChange.document.get("image").toString(),
-                            documentChange.document.get("time").toString(),
-                            documentChange.document.get("date").toString()
-                        )
+                        val fetchedImages =
+                            Image(
+                                documentChange.document.get("image").toString(),
+                                documentChange.document.get("time").toString(),
+                                documentChange.document.get("date").toString()
+                            )
                         when (documentChange.type) {
                             DocumentChange.Type.ADDED -> imageAdapter.setPhotoData(fetchedImages)
                             DocumentChange.Type.REMOVED -> imageAdapter.removePhotoData(fetchedImages)
@@ -139,13 +126,16 @@ class PhotosFragment : Fragment() {
                     Toast.makeText(context,"No data in snapshot",Toast.LENGTH_SHORT).show()
                 }
             }
-        imageAdapter = ImagesAdapter(context!!, photosList, object : PhotoClickListener {
-            override fun onPhotoClick(time: String, date: String, image: String) {
-                Log.d("date", date)
-                dp.sendCurrentTime(time, date, image, categoryName)
-            }
+        imageAdapter = ImagesAdapter(
+            context!!,
+            photosList,
+            object : PhotoClickListener {
+                override fun onPhotoClick(time: String, date: String, image: String) {
+                    Log.d("date", date)
+                    dp.sendCurrentTime(time, date, image, categoryName)
+                }
 
-        })
+            })
         output.photos_recyclerView.adapter = imageAdapter
 
         if (photosList.isNotEmpty()) {
@@ -279,7 +269,11 @@ class PhotosFragment : Fragment() {
 
 
         Log.d("date", date)
-        image = Image(downloadUrl!!, currentTimeInMilis, date)
+        image = Image(
+            downloadUrl!!,
+            currentTimeInMilis,
+            date
+        )
 
         db.collection("users").document(currentUserId).collection("categories")
             .document(categoryName).collection("images").document(currentTimeInMilis).set(image)

@@ -1,4 +1,4 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -18,11 +18,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.galleryapplication.R
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import de.hdodenhof.circleimageview.CircleImageView
@@ -38,18 +38,12 @@ class CategoryFragment : Fragment() {
     var downloadUrl: String? = null
     private lateinit var contentUri: Uri
     private lateinit var category: Category
-
-
     private lateinit var categoryImage: CircleImageView
     private lateinit var categoryName: String
-
-
     private lateinit var mAuth: FirebaseAuth
     private lateinit var currentUserId: String
     private lateinit var db: FirebaseFirestore
     private lateinit var userCategoryImagReference: StorageReference
-
-
     private lateinit var categoryAdapter: CategoryAdapter
     private var categoryList = ArrayList<Category>()
     private lateinit var dp: OnDataPass
@@ -66,7 +60,7 @@ class CategoryFragment : Fragment() {
 
         mAuth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
-        currentUserId = mAuth.currentUser!!.uid
+        currentUserId = mAuth.uid.toString()
         userCategoryImagReference = FirebaseStorage.getInstance().reference.child("Category Images")
 
 
@@ -105,22 +99,27 @@ class CategoryFragment : Fragment() {
 
                     for (documentChange: DocumentChange in documentChangeList) {
                         documentChange.document.data
-                        val fetchedCategory = Category(
-                            (documentChange.document.get("categoryName").toString()),
-                            documentChange.document.get("categoryImage").toString()
-                        )
+                        val fetchedCategory =
+                            Category(
+                                (documentChange.document.get("categoryName").toString()),
+                                documentChange.document.get("categoryImage").toString()
+                            )
                         categoryList.add(fetchedCategory)
 
                     }
-                    categoryAdapter = CategoryAdapter(context!!, categoryList,
-                        object : CategoryClickListener {
-                            override fun onCategoryClick(categoryName: String) {
-                                if (dp != null) {
-                                    dp.sendCategoryName(categoryName)
-                                    Log.d("name", categoryName)
+                    categoryAdapter =
+                        CategoryAdapter(
+                            context!!,
+                            categoryList,
+                            object :
+                                CategoryClickListener {
+                                override fun onCategoryClick(categoryName: String) {
+                                    if (dp != null) {
+                                        dp.sendCategoryName(categoryName)
+                                        Log.d("name", categoryName)
+                                    }
                                 }
-                            }
-                        })
+                            })
                     category_recyclerView.adapter = categoryAdapter
 
                 } else {
@@ -133,7 +132,9 @@ class CategoryFragment : Fragment() {
     }
 
     private fun RequestNewCategory() {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(context, R.style.AlertDialog)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(context,
+            R.style.AlertDialog
+        )
         val inflater = layoutInflater
         val dialogView = inflater.inflate(R.layout.category_custom_layout, null)
         builder.setView(dialogView)
@@ -221,11 +222,17 @@ class CategoryFragment : Fragment() {
 
     fun createNewCategory() {
         if (downloadUrl != null) {
-            category = Category(categoryName, downloadUrl!!)
+            category = Category(
+                categoryName,
+                downloadUrl!!
+            )
         } else {
             val uri: Uri =
                 Uri.parse("android.resource://com.example.galleryapplication/" + R.drawable.profile_image.toString())
-            category = Category(categoryName, uri.toString())
+            category = Category(
+                categoryName,
+                uri.toString()
+            )
 
         }
         Log.d("categoryData", category.toString())

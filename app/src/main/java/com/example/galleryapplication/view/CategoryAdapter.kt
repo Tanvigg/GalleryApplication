@@ -1,14 +1,13 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 
 import android.content.Context
-import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.galleryapplication.R
 import com.squareup.picasso.Picasso
 
 class CategoryAdapter : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
@@ -30,7 +29,9 @@ class CategoryAdapter : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>
         val layoutInflater =
             context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val rowlayout: View = layoutInflater.inflate(R.layout.category_row_layout, parent, false)
-        return CategoryViewHolder(rowlayout)
+        return CategoryViewHolder(
+            rowlayout
+        )
     }
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {

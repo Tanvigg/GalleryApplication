@@ -14,4 +14,6 @@ class Repository {
 
     fun signUp(name: String, email: String, password: String, userImage: Uri) =
         firebaseModel.signUp(name, email, password, userImage)
+
+    fun passwordReset(email: String) =  firebaseModel.passwordReset(email)
 }
