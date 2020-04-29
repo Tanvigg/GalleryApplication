@@ -11,18 +11,15 @@ import com.example.galleryapplication.R
 import com.squareup.picasso.Picasso
 
 class CategoryAdapter : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
-    var categoryList: ArrayList<Category>
+    private lateinit var categoryList: List<Category>
     var context: Context
     var listener: CategoryClickListener
 
-    constructor(
-        context: Context,
-        categoryList: ArrayList<Category>,
-        listener: CategoryClickListener
+
+    constructor(context: Context,listener: CategoryClickListener
     ) : super() {
-        this.categoryList = categoryList
         this.context = context
-        this.listener = listener
+        this.listener =listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
@@ -38,12 +35,9 @@ class CategoryAdapter : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>
         val categoryItem = categoryList[position]
         holder.categoryName.text = categoryItem.categoryName
         Picasso.get().load(categoryItem.categoryImage).into(holder.categoryImage)
-
         holder.categoryImage.setOnClickListener {
             listener.onCategoryClick(categoryItem.categoryName)
         }
-
-
     }
 
 
@@ -51,6 +45,11 @@ class CategoryAdapter : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>
         return categoryList.size
     }
 
+    fun setCategory(fetchedCategory :List<Category>){
+        categoryList = fetchedCategory
+        notifyDataSetChanged()
+
+    }
 
 
 

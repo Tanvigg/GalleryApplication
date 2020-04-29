@@ -9,13 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.galleryapplication.R
 import com.squareup.picasso.Picasso
 
-class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder> {
-    var imageList: ArrayList<Image>
+class PhotosAdapter : RecyclerView.Adapter<PhotosAdapter.ImageViewHolder> {
+    private lateinit var photosList: List<Photos>
     var context: Context
     var listener : PhotoClickListener
 
-    constructor(context: Context, imageList: ArrayList<Image>, listener: PhotoClickListener) : super() {
-        this.imageList = imageList
+    constructor(context: Context, listener: PhotoClickListener) : super() {
         this.context = context
         this.listener = listener
 
@@ -32,7 +31,7 @@ class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder> {
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int){
-        val imageItem = imageList[position]
+        val imageItem = photosList[position]
         Picasso.get().load(imageItem.image).into(holder.image)
 
         holder.image.setOnClickListener{
@@ -42,18 +41,12 @@ class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder> {
     }
 
     override fun getItemCount(): Int {
-       return imageList.size
+       return photosList.size
     }
 
-    fun setPhotoData(fetchedCategory: Image) {
-        imageList.add(fetchedCategory)
+    fun setPhotoData(fetchedPhotos: List<Photos>) {
+        photosList = fetchedPhotos
         notifyDataSetChanged()
-    }
-
-    fun removePhotoData(fetchedCategory: Image) {
-        imageList.remove(fetchedCategory)
-        notifyDataSetChanged()
-
     }
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

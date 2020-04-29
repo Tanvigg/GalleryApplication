@@ -23,7 +23,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
+import com.example.galleryapplication.viewmodel.FirebaseViewModel
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
@@ -44,21 +46,15 @@ import java.util.*
 /**
  * A simple [Fragment] subclass.
  */
-class ProfileFragment : Fragment() {
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var currentUserId: String
-    private lateinit var db: FirebaseFirestore
+class ProfileFragment : Fragment(),View.OnClickListener {
     private lateinit var loadingBar: ProgressDialog
     private val GALLERY = 1
-    private val IMAGE_DIRECTORY = "/YourDirectName"
-
     private lateinit var contentUri: Uri
     private val CAMERA_REQUEST = 188
     private val MY_CAMERA_PERMISSION_REQUEST = 100
-    private lateinit var userProfileImageRef: StorageReference
-    var downloadUrl: String? = null
-    val userHashMap: HashMap<String, String> = HashMap<String, String>()
-    private val TAG: String = "ProfileFragment"
+    private val viewModel: FirebaseViewModel by lazy {
+        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -70,54 +66,49 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         val output: View = inflater.inflate(R.layout.fragment_profile, container, false)
 
+        loadingBar = ProgressDialog(context, R.style.MyAlertDialogStyle)
+        viewModel.fetchUserDetails().addOnSuccessListener {
+            loadingBar.setTitle("Setting Profile ")
+            loadingBar.setMessage("please wait, while we are getting your Details...")
+            loadingBar.setCanceledOnTouchOutside(false)
+            loadingBar.show()
 
-        mAuth = FirebaseAuth.getInstance()
-        currentUserId = mAuth.currentUser!!.uid
-        db = FirebaseFirestore.getInstance()
-        userProfileImageRef = FirebaseStorage.getInstance().reference.child("Profile Images")
-        loadingBar = ProgressDialog(context,
-            R.style.MyAlertDialogStyle
-        )
-
-
-
-        //in order to fetch user details stored in firebase cloud database
-        fetchUserData()
-
-
-
-
-        output.image_frame.setOnClickListener {
-            RequestProfileImage()
+            userName.setText(it.get("Name").toString())
+            userName.isEnabled = false
+            userEmail.setText(it.get("Email").toString())
+            userEmail.isEnabled = false
+            Picasso.get().load(it.get("ProfileImage").toString()).into(userProfileImage)
+            loadingBar.dismiss()
         }
 
-        output.button_signOut.setOnClickListener {
+        output.button_signOut.setOnClickListener(this)
+        output.image_frame.setOnClickListener(this)
+
+
+        return output
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onClick(v: View?) {
+        if(v == button_signOut){
             val builder = AlertDialog.Builder(context)
             builder.setMessage("Do You want to Logout of the app?")
             builder.setCancelable(true)
-            builder.setPositiveButton("YES", object : DialogInterface.OnClickListener {
-
-                override fun onClick(dialog: DialogInterface?, which: Int) {
-                    mAuth.signOut()
-
-                    val intent = Intent(context, MainActivity::class.java)
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(intent)
-                }
-            })
-
-            builder.setNegativeButton("NO", object : DialogInterface.OnClickListener {
-
-                override fun onClick(dialog: DialogInterface?, which: Int) {
-                    dialog!!.cancel()
-
-                }
-            })
+            builder.setPositiveButton("YES"
+            ) { dialog, which ->
+                viewModel.logout()
+                val intent = Intent(context, MainActivity::class.java)
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
+            }
+            builder.setNegativeButton("NO"
+            ) { dialog, which -> dialog!!.cancel() }
             builder.create().show()
 
-        }
-        return output
 
+        }else if(v == image_frame){
+            RequestProfileImage()
+        }
 
     }
 
@@ -161,182 +152,29 @@ class ProfileFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             val bitmap: Bitmap = data?.extras?.get("data") as Bitmap
             userProfileImage.setImageBitmap(bitmap)
-
-            //calling method to obtain uri from bitmap
-
             contentUri = getImageUri(context!!, bitmap)
-            Log.d("image", contentUri.toString())
-
+            viewModel.updateUserProfile(contentUri)
         } else if (requestCode == GALLERY && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 contentUri = data.data!!
-
-                val bitmap: Bitmap =
-                    MediaStore.Images.Media.getBitmap(context?.contentResolver, contentUri)
-
-                var path: String = saveImage(bitmap)
+                viewModel.updateUserProfile(contentUri)
+                val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, contentUri)
                 Toast.makeText(context, "Image Saved", Toast.LENGTH_SHORT).show()
                 userProfileImage.setImageBitmap(bitmap)
             }
         }
-
-        try {
-            val filePath: StorageReference =
-                userProfileImageRef.child("image" + contentUri.lastPathSegment)
-
-            Log.d("image", contentUri.toString())
-
-            //storing new image url to storage
-
-            filePath.putFile(contentUri).addOnCompleteListener { task ->
-
-                if (task.isSuccessful) {
-                    filePath.downloadUrl.addOnCompleteListener(OnCompleteListener { task ->
-                        downloadUrl = task.result.toString()
-
-
-                        //updating in firestore
-
-                        val documentReference: DocumentReference? =
-                            db.collection("users").document(currentUserId.toString())
-
-                        if (downloadUrl == null) {
-                            val uri: Uri =
-                                Uri.parse("android.resource://com.example.galleryapplication/" + R.drawable.profile_image.toString())
-                            Log.d(TAG, uri.toString())
-                            userHashMap.put("Image", uri.toString())
-                        } else {
-                            userHashMap.put("Image", downloadUrl!!)
-                        }
-
-                        documentReference!!.update(userHashMap as Map<String, Any>)
-                            .addOnCompleteListener {
-                                if (task.isSuccessful) {
-                                    Toast.makeText(
-                                        context,
-                                        "Profile Picture updated Successfully!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-
-
-                                } else {
-                                    Toast.makeText(context, "Filed to Update!", Toast.LENGTH_SHORT)
-                                        .show()
-
-                                }
-
-                            }
-                    })
-                } else {
-                    val message: String = task.exception.toString()
-                    Toast.makeText(context, "Error: $message", Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-
-            }
-
-
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show()
-
-        }
-
     }
-
-    private fun fetchUserData() {
-        loadingBar.setTitle("Setting Profile ")
-        loadingBar.setMessage("please wait, while we are getting your Details...")
-        loadingBar.setCanceledOnTouchOutside(false)
-        loadingBar.show()
-
-        val documentReference: DocumentReference? =
-            db.collection("users").document(currentUserId)
-        documentReference!!.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val doc: DocumentSnapshot = task.result!!
-                if (doc.exists()) {
-                    Log.d("Document", doc.getData().toString())
-                    userName.setText(doc.getData()!!.get("Name").toString())
-                    userName.isEnabled = false
-                    userEmail.setText(doc.getData()!!.get("Email").toString())
-                    userEmail.isEnabled = false
-                    Picasso.get().load(doc.data!!.get("ProfileImage").toString()).into(userProfileImage)
-
-                } else {
-                    Log.d("Document", "NO DATA")
-                }
-                loadingBar.dismiss()
-
-
-            }
-        }
-    }
-
-
-    private fun saveImage(bitmap: Bitmap): String {
-        val bytes = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes)
-        val wallpaperDirectory =
-            File(Environment.getExternalStorageDirectory().absolutePath.toString() + IMAGE_DIRECTORY)
-        if (!wallpaperDirectory.exists()) {
-            wallpaperDirectory.mkdir()
-
-        }
-        try {
-            val f =
-                File(
-                    wallpaperDirectory,
-                    Calendar.getInstance().timeInMillis.toString() + ".jpg"
-                )
-            f.createNewFile()
-            val fo = FileOutputStream(f)
-            fo.write(bytes.toByteArray())
-            MediaScannerConnection.scanFile(
-                context,
-                arrayOf(f.path),
-                arrayOf("image/jpeg"),
-                null
-            )
-            fo.close()
-            Log.d("TAG", "File Saved::---&gt;" + f.absolutePath)
-            return f.absolutePath
-        } catch (e1: IOException) {
-            e1.printStackTrace()
-
-        }
-        return ""
-
-    }
-
 
     fun getImageUri(context: Context, inImage: Bitmap): Uri {
-        Log.d("image", inImage.toString())
-
-        val bytes = ByteArrayOutputStream()
-
-        inImage.compress(Bitmap.CompressFormat.JPEG, 80, bytes)
-        val byteArray = bytes.toByteArray()
-
-        Log.d("image", byteArray.size.toString())
-
-        val compressedBitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-
-        Log.d("image", compressedBitmap.toString())
-
-        val path: String = MediaStore.Images.Media.insertImage(
-            context.contentResolver,
-            compressedBitmap,
-            "Title",
-            null
-        )
+        val outImage: Bitmap = Bitmap.createScaledBitmap(inImage, 2000, 2000, true)
+        val path: String =
+            MediaStore.Images.Media.insertImage(context.contentResolver, outImage, "Title", null)
         return Uri.parse(path)
-
     }
+
+
 
 }

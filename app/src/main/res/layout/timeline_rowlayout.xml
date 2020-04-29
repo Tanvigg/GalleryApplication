@@ -19,8 +19,8 @@
 
             <ImageView
                 android:id="@+id/timeline_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="150dp"
+                android:layout_height="160dp"
                 android:layout_margin="2dp"/>
 
 

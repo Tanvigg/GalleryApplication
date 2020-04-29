@@ -17,48 +17,39 @@ import androidx.fragment.app.Fragment
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.GridLayoutManager
 import com.example.galleryapplication.R
-import com.google.android.gms.tasks.OnCompleteListener
+import com.example.galleryapplication.viewmodel.FirebaseViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.*
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.fragment_photos.view.*
-import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+
 
 /**
  * A simple [Fragment] subclass.
  */
 class PhotosFragment : Fragment() {
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
-    private lateinit var currentUserId: String
-    private lateinit var userPhotosReference: StorageReference
-    private val TAG: String = "PhotoFragment"
 
+    private val TAG: String = "PhotoFragment"
 
     private val CAMERA_REQUEST = 188
     private val GALLERY = 1
     private val MY_CAMERA_PERMISSION_REQUEST = 100
-    var downloadUrl: String? = null
     private lateinit var contentUri: Uri
-    private lateinit var image: Image
     private lateinit var categoryName: String
-    private lateinit var photosList: ArrayList<Image>
-    private lateinit var imageAdapter: ImagesAdapter
-
+    private lateinit var photoAdapter: PhotosAdapter
     private lateinit var calender: Calendar
     private lateinit var dp: OnDataPass
-    lateinit var photoListener: ListenerRegistration
-
-
     private lateinit var imageUri: Uri
+    private val viewModel: FirebaseViewModel by lazy {
+        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    }
+
+
 
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -71,80 +62,24 @@ class PhotosFragment : Fragment() {
         setHasOptionsMenu(true)
         val output: View = inflater.inflate(R.layout.fragment_photos, container, false)
 
-
-        mAuth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
-        currentUserId = mAuth.currentUser!!.uid
-        userPhotosReference = FirebaseStorage.getInstance().reference.child("Images in Category")
-
-        photosList = arrayListOf()
-
-
-
         categoryName = arguments!!.getString("CategoryName").toString()
-        Log.d("name", categoryName)
 
-
-        val layoutManager = GridLayoutManager(context, 4, GridLayoutManager.VERTICAL, false)
-        output.photos_recyclerView.layoutManager = layoutManager
-        output.photos_recyclerView.setHasFixedSize(true)
-        output.photos_recyclerView.itemAnimator = DefaultItemAnimator()
-
-        output.progressbar_photos.visibility = View.VISIBLE
-
-
-
-        if(photosList.size>0){
-            photosList.clear()
-        }
-
-        photoListener = db.collection("users").document(currentUserId).collection("categories")
-            .document(categoryName).collection("images").orderBy("time", Query.Direction.DESCENDING)
-            .addSnapshotListener { snapshot, e ->
-                if (e != null) {
-                    Log.w("TAG", "listen:error", e)
-                    return@addSnapshotListener
-                }
-                if (snapshot != null) {
-                    output.progressbar_photos.visibility = View.GONE
-
-                    val documentChangeList: List<DocumentChange> = snapshot.documentChanges
-                    for (documentChange: DocumentChange in documentChangeList) {
-                        documentChange.document.data
-                        val fetchedImages =
-                            Image(
-                                documentChange.document.get("image").toString(),
-                                documentChange.document.get("time").toString(),
-                                documentChange.document.get("date").toString()
-                            )
-                        when (documentChange.type) {
-                            DocumentChange.Type.ADDED -> imageAdapter.setPhotoData(fetchedImages)
-                            DocumentChange.Type.REMOVED -> imageAdapter.removePhotoData(fetchedImages)
-                        }
-                    }
-                }else{
-                    Toast.makeText(context,"No data in snapshot",Toast.LENGTH_SHORT).show()
-                }
+        photoAdapter = PhotosAdapter(context!!,object : PhotoClickListener {
+            override fun onPhotoClick(time: String, date: String, image: String) {
+                Log.d("date", date)
+                dp.sendCurrentTime(time, date, image, categoryName)
             }
-        imageAdapter = ImagesAdapter(
-            context!!,
-            photosList,
-            object : PhotoClickListener {
-                override fun onPhotoClick(time: String, date: String, image: String) {
-                    Log.d("date", date)
-                    dp.sendCurrentTime(time, date, image, categoryName)
-                }
 
-            })
-        output.photos_recyclerView.adapter = imageAdapter
-
-        if (photosList.isNotEmpty()) {
-            photoListener.remove()
-        }
-
-
-
-        return output
+        })
+        viewModel.fetchPhotos(categoryName).observe(viewLifecycleOwner,Observer{photos ->
+            photos.let {
+                photoAdapter.setPhotoData(it)
+                output.photos_recyclerView.adapter = photoAdapter
+                output.photos_recyclerView.layoutManager = GridLayoutManager(context,4,GridLayoutManager.VERTICAL,false)
+                output.photos_recyclerView.itemAnimator = DefaultItemAnimator()
+            }
+        })
+            return output
     }
 
 
@@ -170,8 +105,7 @@ class PhotosFragment : Fragment() {
             val values = ContentValues()
             values.put(MediaStore.Images.Media.TITLE, "New Picture")
             values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera")
-            imageUri =
-                context!!.contentResolver.insert(
+            imageUri = context!!.contentResolver.insert(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     values
                 )!!
@@ -211,52 +145,16 @@ class PhotosFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-
             val bitmap: Bitmap =
                 MediaStore.Images.Media.getBitmap(context!!.contentResolver, imageUri)
-
-            //calling method to obtain uri from bitmap
-
             contentUri = getImageUri(context!!, bitmap)
-            Log.d("image", contentUri.toString())
-
-
         } else if (requestCode == GALLERY && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 contentUri = data.data!!
-
-                val bitmap: Bitmap =
-                    MediaStore.Images.Media.getBitmap(context?.contentResolver, contentUri)
-
                 Toast.makeText(context, "Image Saved", Toast.LENGTH_SHORT).show()
             }
         }
-
-        try {
-            val filePath: StorageReference =
-                userPhotosReference.child("image" + contentUri.lastPathSegment)
-
-            Log.d("image", contentUri.toString())
-            filePath.putFile(contentUri).addOnCompleteListener { task ->
-
-                if (task.isSuccessful) {
-                    filePath.downloadUrl.addOnCompleteListener(OnCompleteListener { task ->
-                        downloadUrl = task.result.toString()
-                        storeImagesInCategory()
-                    })
-                } else {
-                    val message: String = task.exception.toString()
-                    Toast.makeText(context, "Error: $message", Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-            }
-
-
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Toast.makeText(context, "Failed!", Toast.LENGTH_SHORT).show()
-        }
+        storeImagesInCategory()
     }
 
 
@@ -265,31 +163,7 @@ class PhotosFragment : Fragment() {
         val currentTimeInMilis = calender.timeInMillis.toString()
         val formatter = SimpleDateFormat("MMM dd,yyyy")
         val date = formatter.format(Date())
-        val  isFavourite  = false
-
-
-        Log.d("date", date)
-        image = Image(
-            downloadUrl!!,
-            currentTimeInMilis,
-            date
-        )
-
-        db.collection("users").document(currentUserId).collection("categories")
-            .document(categoryName).collection("images").document(currentTimeInMilis).set(image)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(
-                        context,
-                        "Category saved in database Successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-
+        viewModel.addPhotos(contentUri,currentTimeInMilis,date,categoryName)
     }
 
 
@@ -343,7 +217,6 @@ class PhotosFragment : Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
-
 
 
 }

@@ -15,18 +15,11 @@ class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
     PhotosFragment.OnDataPass {
     private val manager: FragmentManager = supportFragmentManager
     private val transaction = manager.beginTransaction()
-    private val categoryFragment =
-        CategoryFragment()
-    private val timeLineFragment =
-        TimeLineFragment()
-    private val favouritesFragment =
-        FavouritesFragment()
-    private val profileFragment =
-        ProfileFragment()
-    private var photosFragment =
-        PhotosFragment()
-    private var imageViewerFragment =
-        ImageViewerFragment()
+    private val categoryFragment = CategoryFragment()
+    private val timeLineFragment = TimeLineFragment()
+    private val profileFragment = ProfileFragment()
+    private var photosFragment = PhotosFragment()
+    private var imageViewerFragment = ImageViewerFragment()
     private lateinit var catName : String
 
 
@@ -38,8 +31,6 @@ class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
         setSupportActionBar(toolbar_gallery)
         supportActionBar!!.title = "Categories"
-
-
         bottomNav.setOnNavigationItemSelectedListener(this)
         transaction.replace(R.id.container,categoryFragment)
         transaction.commit()
@@ -59,10 +50,7 @@ class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
             supportActionBar!!.title = "Your Timeline"
             transaction1.replace(R.id.container,timeLineFragment)
         }
-        else if(item.itemId == R.id.favourites){
-            supportActionBar!!.title = "Favourites"
-            transaction1.replace(R.id.container,favouritesFragment)
-        }
+
         else if(item.itemId == R.id.profile){
             supportActionBar!!.title = "Profile"
             transaction1.replace(R.id.container,profileFragment)
@@ -80,16 +68,6 @@ class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
         bundle.putString("CategoryName",categoryName)
         photosFragment.arguments = bundle
         supportActionBar!!.title = categoryName
-        /*supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setDisplayShowHomeEnabled(true)
-        toolbar_gallery.setNavigationIcon(R.drawable.ic_arrow_back_white_18dp)
-        toolbar_gallery.setNavigationOnClickListener{
-            supportActionBar!!.title = "Categories"
-            supportFragmentManager.popBackStack()
-            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-            supportActionBar!!.setDisplayShowHomeEnabled(false)
-
-        }*/
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(
             R.id.container, photosFragment)
@@ -108,14 +86,6 @@ class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
         imageViewerFragment.arguments = bundle
         supportActionBar!!.title = currentDate
-
-        /*supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setDisplayShowHomeEnabled(true)
-        toolbar_gallery.setNavigationIcon(R.drawable.ic_arrow_back_white_18dp)
-        toolbar_gallery.setNavigationOnClickListener{
-            supportActionBar!!.title = catName
-            supportFragmentManager.popBackStack()
-        }*/
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container,imageViewerFragment)
         transaction.addToBackStack(null)
