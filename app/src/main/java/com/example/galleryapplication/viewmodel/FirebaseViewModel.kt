@@ -41,6 +41,8 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     private var savedUserCategories: MutableLiveData<List<Category>> = MutableLiveData()
     private var savedUserPhotos: MutableLiveData<List<Photos>> = MutableLiveData()
     private var savedTimeLinePhotos: MutableLiveData<List<TimeLineModel>> = MutableLiveData()
+    private lateinit var tList:List<TimeLineModel>
+
 
 
     fun getEmailError(): LiveData<String> {
@@ -215,8 +217,7 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
                         documentChange.document.data
                         val fetchedCategory = Category(
                             documentChange.document.get("categoryName").toString(),
-                            documentChange.document.get("categoryImage").toString()
-                        )
+                            documentChange.document.get("categoryImage").toString())
                         categoryList.add(fetchedCategory)
                     }
                     savedUserCategories.value = categoryList
@@ -271,7 +272,12 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
                     i.metadata.addOnSuccessListener {
                         val timeLineModel = TimeLineModel(i.downloadUrl, it.creationTimeMillis)
                         timeLineList.add(timeLineModel)
-                        savedTimeLinePhotos.value = timeLineList
+
+                        tList = timeLineList.sortedByDescending {
+                            it.timeStamp as Long
+                        }
+                        savedTimeLinePhotos.value = tList
+                        Log.d("image",savedTimeLinePhotos.value.toString())
 
                     }
                 }

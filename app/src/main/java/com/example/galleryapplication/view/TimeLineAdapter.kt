@@ -13,11 +13,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class TimeLineAdapter : RecyclerView.Adapter<TimeLineAdapter.TimeLineViewHolder> {
-    private lateinit var timeLineList: List<TimeLineModel>
+    var timeLineList: List<TimeLineModel>
     var context: Context
 
-    constructor(context: Context) : super() {
+    constructor(timeLineList : List<TimeLineModel>,context: Context) : super() {
         this.context = context
+        this.timeLineList = timeLineList
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineViewHolder {
@@ -44,14 +45,6 @@ class TimeLineAdapter : RecyclerView.Adapter<TimeLineAdapter.TimeLineViewHolder>
     override fun getItemCount(): Int {
         return timeLineList.size
     }
-
-    fun setImage(timeLine: List<TimeLineModel>){
-        timeLineList = timeLine.sortedByDescending {
-            it.timeStamp as Long
-        }
-        notifyDataSetChanged()
-    }
-
     class TimeLineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val timeline_image: ImageView = itemView.findViewById(R.id.timeline_image)
         val date: TextView = itemView.findViewById(R.id.date)
