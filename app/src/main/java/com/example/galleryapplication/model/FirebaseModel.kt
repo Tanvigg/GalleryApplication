@@ -19,6 +19,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import org.w3c.dom.Document
+import java.util.*
+import kotlin.collections.HashMap
 
 
 class FirebaseModel {
@@ -185,9 +187,9 @@ class FirebaseModel {
     }
 
     fun addPhotos(selectedPhotoUri: Uri, timeInMilis: String, date: String, categoryName: String) {
-        userPhotosReference = FirebaseStorage.getInstance().reference.child("Images in Category")
-        val filePath: StorageReference =
-            userPhotosReference.child("image" + selectedPhotoUri.lastPathSegment)
+        currentUserId = auth.currentUser!!.uid
+        userPhotosReference = FirebaseStorage.getInstance().getReference("CategoryImages/$currentUserId")
+        val filePath: StorageReference = userPhotosReference.child("image" + selectedPhotoUri.lastPathSegment)
         filePath.putFile(selectedPhotoUri).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 filePath.downloadUrl.addOnCompleteListener { task ->
@@ -246,7 +248,7 @@ class FirebaseModel {
 
     fun fetchTimeLine(): StorageReference {
         currentUserId = auth.currentUser!!.uid
-        photosReference = FirebaseStorage.getInstance().reference.child("Images in Category")
+        photosReference = FirebaseStorage.getInstance().getReference("CategoryImages/$currentUserId")
         return photosReference
     }
 }

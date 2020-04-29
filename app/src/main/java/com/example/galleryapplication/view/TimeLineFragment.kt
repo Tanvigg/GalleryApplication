@@ -1,6 +1,7 @@
 package com.example.galleryapplication.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +28,6 @@ class TimeLineFragment : Fragment() {
     }
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,17 +36,17 @@ class TimeLineFragment : Fragment() {
         // Inflate the layout for this fragment
         val output: View = inflater.inflate(R.layout.fragment_time_line, container, false)
 
-        timeLineAdapter = TimeLineAdapter(context!!)
-
-        viewModel.fetchTimeLine().observe(viewLifecycleOwner, Observer{times->
-            times.let{
-                timeLineAdapter.setImage(it)
-                output.timeline_recyclerView.adapter = timeLineAdapter
-                output.timeline_recyclerView.layoutManager = GridLayoutManager(context,3,GridLayoutManager.VERTICAL,false)
-                output.timeline_recyclerView.itemAnimator = DefaultItemAnimator()
 
 
-            }
+        viewModel.fetchTimeLine().observe(viewLifecycleOwner, Observer {
+            timeLineAdapter = TimeLineAdapter(it,context!!)
+            Log.d("imageIt",it.toString())
+            output.timeline_recyclerView.layoutManager =
+                GridLayoutManager(context, 3, GridLayoutManager.VERTICAL, false)
+            output.timeline_recyclerView.itemAnimator = DefaultItemAnimator()
+            output.timeline_recyclerView.adapter = timeLineAdapter
+
+
         })
         return output
     }
