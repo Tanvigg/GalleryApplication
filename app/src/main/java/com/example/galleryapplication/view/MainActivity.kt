@@ -1,22 +1,21 @@
-package com.example.galleryapplication
+package com.example.galleryapplication.view
 import android.os.Bundle
-import android.text.Html
-import android.text.SpannableString
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.toColor
 import androidx.fragment.app.FragmentManager
+import com.example.galleryapplication.R
 import kotlinx.android.synthetic.main.activity_main.*
-import androidx.core.graphics.toColor as toColor1
 
 class MainActivity : AppCompatActivity() {
 
     private val manager: FragmentManager = supportFragmentManager
     private val transaction = manager.beginTransaction()
-    private val loginFragment = LoginFragment()
-    private val signupFragment = SignUpFragment()
+    private val loginFragment =
+        LoginFragment()
+    private val signupFragment =
+        SignUpFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
