@@ -13,11 +13,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class TimeLineAdapter : RecyclerView.Adapter<TimeLineAdapter.TimeLineViewHolder> {
-    var timeLineList: List<TimeLineModel>
+    private lateinit var timeLineList: List<TimeLineModel>
     var context: Context
 
-    constructor(context: Context, timeLineList: List<TimeLineModel>) : super() {
-        this.timeLineList = timeLineList
+    constructor(context: Context) : super() {
         this.context = context
     }
 
@@ -44,6 +43,13 @@ class TimeLineAdapter : RecyclerView.Adapter<TimeLineAdapter.TimeLineViewHolder>
 
     override fun getItemCount(): Int {
         return timeLineList.size
+    }
+
+    fun setImage(timeLine: List<TimeLineModel>){
+        timeLineList = timeLine.sortedByDescending {
+            it.timeStamp as Long
+        }
+        notifyDataSetChanged()
     }
 
     class TimeLineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

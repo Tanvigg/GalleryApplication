@@ -28,6 +28,7 @@ class FirebaseModel {
     private lateinit var userProfileImageRef: StorageReference
     private lateinit var userCategoryImagReference: StorageReference
     private lateinit var userPhotosReference: StorageReference
+    private lateinit var photosReference: StorageReference
 
 
     private lateinit var profileImageUrl: String
@@ -210,25 +211,42 @@ class FirebaseModel {
 
     fun fetchPhotos(categoryName: String): CollectionReference {
         currentUserId = auth.currentUser!!.uid
-        var collectionReference = db.collection("users").document(currentUserId).collection("category").document(categoryName)
-            .collection("images")
+        var collectionReference =
+            db.collection("users").document(currentUserId).collection("category")
+                .document(categoryName)
+                .collection("images")
         return collectionReference
     }
 
-    fun deleteImage(image:String,categoryName: String,timeInMilis: String){
+    fun deleteImage(image: String, categoryName: String, timeInMilis: String) {
         currentUserId = auth.currentUser!!.uid
 
         //delete image from storage
         val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(image)
         storageReference.delete().addOnSuccessListener {
-            Log.d(TAG,"deleted")
+            Log.d(TAG, "deleted")
         }
-            .addOnFailureListener{
-                Log.d(TAG,"failed")
+            .addOnFailureListener {
+                Log.d(TAG, "failed")
             }
 
         //delete image from firestrore
-        db.collection("users").document(currentUserId).collection("category").document(categoryName).collection("images")
-            .document(timeInMilis).delete()
+        db.collection("users").document(currentUserId).collection("category").document(categoryName)
+            .collection("images")
+            .document(timeInMilis).delete().addOnCompleteListener {task->
+                if(task.isSuccessful){
+                    Log.d(TAG,"Deleted")
+                }
+                else{
+                    Log.d(TAG,"Failed")
+                }
+
+            }
+    }
+
+    fun fetchTimeLine(): StorageReference {
+        currentUserId = auth.currentUser!!.uid
+        photosReference = FirebaseStorage.getInstance().reference.child("Images in Category")
+        return photosReference
     }
 }

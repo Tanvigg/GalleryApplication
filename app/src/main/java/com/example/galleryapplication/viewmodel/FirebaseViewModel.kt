@@ -11,10 +11,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.galleryapplication.model.Repository
-import com.example.galleryapplication.view.Category
-import com.example.galleryapplication.view.Photos
-import com.example.galleryapplication.view.RC_SIGN_IN
-import com.example.galleryapplication.view.showToast
+import com.example.galleryapplication.view.*
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
@@ -26,6 +23,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.android.synthetic.main.fragment_sign_up.*
+import java.sql.Time
 
 class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     private val repository = Repository()
@@ -39,9 +37,10 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     //(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
     //{6,16}          : This limits the length of password from minimum 6 letters to maximum 16 letters.
     var categoryList: MutableList<Category> = mutableListOf()
-    var photosList:MutableList<Photos> = mutableListOf()
+    var photosList: MutableList<Photos> = mutableListOf()
     private var savedUserCategories: MutableLiveData<List<Category>> = MutableLiveData()
-    private var savedUserPhotos:MutableLiveData<List<Photos>> = MutableLiveData()
+    private var savedUserPhotos: MutableLiveData<List<Photos>> = MutableLiveData()
+    private var savedTimeLinePhotos: MutableLiveData<List<TimeLineModel>> = MutableLiveData()
 
 
     fun getEmailError(): LiveData<String> {
@@ -202,8 +201,9 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     }
 
     fun fetchCategories(): LiveData<List<Category>> {
-        if (categoryList.size > 0)
+        if (categoryList.size > 0) {
             categoryList.clear()
+        }
         repository.fetchCategories()
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -220,21 +220,21 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
                         categoryList.add(fetchedCategory)
                     }
                     savedUserCategories.value = categoryList
-                }
-                else {
+                } else {
                     Log.d("TAG", "Query snapshot is null")
                 }
             }
         return savedUserCategories
     }
 
-    fun addPhotos(selectedPhotoUri: Uri,timeInMilis:String,date:String,categoryName: String){
-        repository.addPhotos(selectedPhotoUri,timeInMilis,date,categoryName)
+    fun addPhotos(selectedPhotoUri: Uri, timeInMilis: String, date: String, categoryName: String) {
+        repository.addPhotos(selectedPhotoUri, timeInMilis, date, categoryName)
     }
 
-    fun fetchPhotos(categoryName: String):LiveData<List<Photos>>{
-        if(photosList.size>0)
+    fun fetchPhotos(categoryName: String): LiveData<List<Photos>> {
+        if (photosList.size > 0) {
             photosList.clear()
+        }
         repository.fetchPhotos(categoryName)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -259,7 +259,24 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
         return savedUserPhotos
     }
 
-    fun deleteImage(image:String,categoryName: String,timeInMilis: String){
-        repository.deleteImage(image,categoryName,timeInMilis)
+    fun deleteImage(image: String, categoryName: String, timeInMilis: String) {
+        repository.deleteImage(image, categoryName, timeInMilis)
+    }
+
+    fun fetchTimeLine(): LiveData<List<TimeLineModel>> {
+        repository.fetchTimeLine().listAll()
+            .addOnSuccessListener {
+                val timeLineList = mutableListOf<TimeLineModel>()
+                for (i in it.items) {
+                    i.metadata.addOnSuccessListener {
+                        val timeLineModel = TimeLineModel(i.downloadUrl, it.creationTimeMillis)
+                        timeLineList.add(timeLineModel)
+                        savedTimeLinePhotos.value = timeLineList
+
+                    }
+                }
+
+            }
+        return savedTimeLinePhotos
     }
 }

@@ -5,9 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.galleryapplication.R
+import com.example.galleryapplication.viewmodel.FirebaseViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -18,12 +21,11 @@ import kotlinx.android.synthetic.main.fragment_time_line.view.*
  * A simple [Fragment] subclass.
  */
 class TimeLineFragment : Fragment() {
-    private lateinit var mAuth: FirebaseAuth
-    private lateinit var currentUserId: String
-    private lateinit var db: FirebaseFirestore
-    private lateinit var timeLineList: ArrayList<TimeLineModel>
-    private lateinit var photosReference: StorageReference
     private lateinit var timeLineAdapter: TimeLineAdapter
+    private val viewModel: FirebaseViewModel by lazy {
+        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    }
+
 
 
     override fun onCreateView(
@@ -33,37 +35,19 @@ class TimeLineFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val output: View = inflater.inflate(R.layout.fragment_time_line, container, false)
-        timeLineList = arrayListOf()
 
-        output.timeline_recyclerView.layoutManager = GridLayoutManager(context,3,GridLayoutManager.VERTICAL,false)
-        output.timeline_recyclerView.setHasFixedSize(true)
-        output.timeline_recyclerView.itemAnimator = DefaultItemAnimator()
+        timeLineAdapter = TimeLineAdapter(context!!)
 
-        mAuth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
-        currentUserId = mAuth.currentUser!!.uid
-        photosReference = FirebaseStorage.getInstance().reference.child("Images in Category")
-        photosReference.listAll().addOnSuccessListener {
-            for (i in it.items) {
-                i.metadata.addOnSuccessListener {
-                    val timeLineModel =
-                        TimeLineModel(
-                            i.downloadUrl,
-                            it.creationTimeMillis
-                        )
-                    timeLineList.add(timeLineModel)
-                    var tList : List<TimeLineModel>  = timeLineList.sortedByDescending {
-                        it.timeStamp as Long }
-                    timeLineAdapter =
-                        TimeLineAdapter(
-                            context!!,
-                            tList
-                        )
-                    output.timeline_recyclerView!!.adapter = timeLineAdapter
-                }
+        viewModel.fetchTimeLine().observe(viewLifecycleOwner, Observer{times->
+            times.let{
+                timeLineAdapter.setImage(it)
+                output.timeline_recyclerView.adapter = timeLineAdapter
+                output.timeline_recyclerView.layoutManager = GridLayoutManager(context,3,GridLayoutManager.VERTICAL,false)
+                output.timeline_recyclerView.itemAnimator = DefaultItemAnimator()
+
 
             }
-        }
+        })
         return output
     }
 }

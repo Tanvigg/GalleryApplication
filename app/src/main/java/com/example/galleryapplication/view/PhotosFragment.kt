@@ -148,13 +148,16 @@ class PhotosFragment : Fragment() {
             val bitmap: Bitmap =
                 MediaStore.Images.Media.getBitmap(context!!.contentResolver, imageUri)
             contentUri = getImageUri(context!!, bitmap)
+            storeImagesInCategory()
+
         } else if (requestCode == GALLERY && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 contentUri = data.data!!
                 Toast.makeText(context, "Image Saved", Toast.LENGTH_SHORT).show()
+                storeImagesInCategory()
+
             }
         }
-        storeImagesInCategory()
     }
 
 

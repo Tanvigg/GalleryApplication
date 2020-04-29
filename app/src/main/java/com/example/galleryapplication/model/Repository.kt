@@ -37,4 +37,6 @@ class Repository {
 
     fun deleteImage(image : String,categoryName: String,timeInMilis: String) = firebaseModel.deleteImage(image,categoryName,timeInMilis)
 
+    fun fetchTimeLine() = firebaseModel.fetchTimeLine()
+
 }
