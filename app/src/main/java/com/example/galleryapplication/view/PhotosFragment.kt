@@ -64,19 +64,21 @@ class PhotosFragment : Fragment() {
 
         categoryName = arguments!!.getString("CategoryName").toString()
 
-        photoAdapter = PhotosAdapter(context!!,object : PhotoClickListener {
-            override fun onPhotoClick(time: String, date: String, image: String) {
-                Log.d("date", date)
-                dp.sendCurrentTime(time, date, image, categoryName)
-            }
 
-        })
         viewModel.fetchPhotos(categoryName).observe(viewLifecycleOwner,Observer{photos ->
             photos.let {
+                photoAdapter = PhotosAdapter(context!!,object : PhotoClickListener {
+                    override fun onPhotoClick(time: String, date: String, image: String) {
+                        Log.d("date", date)
+                        dp.sendCurrentTime(time, date, image, categoryName)
+                    }
+
+                })
                 photoAdapter.setPhotoData(it)
-                output.photos_recyclerView.adapter = photoAdapter
                 output.photos_recyclerView.layoutManager = GridLayoutManager(context,4,GridLayoutManager.VERTICAL,false)
                 output.photos_recyclerView.itemAnimator = DefaultItemAnimator()
+                output.photos_recyclerView.adapter = photoAdapter
+
             }
         })
             return output

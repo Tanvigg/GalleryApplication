@@ -36,8 +36,8 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     private val patternPassword = "^(?=.*\\d).{6,16}\$"
     //(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
     //{6,16}          : This limits the length of password from minimum 6 letters to maximum 16 letters.
-    var categoryList: MutableList<Category> = mutableListOf()
-    var photosList: MutableList<Photos> = mutableListOf()
+    private lateinit var categoryList: MutableList<Category>
+    private  lateinit  var photosList: MutableList<Photos>
     private var savedUserCategories: MutableLiveData<List<Category>> = MutableLiveData()
     private var savedUserPhotos: MutableLiveData<List<Photos>> = MutableLiveData()
     private var savedTimeLinePhotos: MutableLiveData<List<TimeLineModel>> = MutableLiveData()
@@ -203,6 +203,7 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     }
 
     fun fetchCategories(): LiveData<List<Category>> {
+        categoryList = mutableListOf()
         if (categoryList.size > 0) {
             categoryList.clear()
         }
@@ -233,6 +234,7 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     }
 
     fun fetchPhotos(categoryName: String): LiveData<List<Photos>> {
+        photosList =  mutableListOf()
         if (photosList.size > 0) {
             photosList.clear()
         }
@@ -244,11 +246,10 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
                 }
                 if (snapshot != null) {
                     for (documentChange: DocumentChange in snapshot.documentChanges) {
-                        documentChange.document.data
                         val fetchedPhotos = Photos(
-                            documentChange.document.get("image").toString(),
-                            documentChange.document.get("time").toString(),
-                            documentChange.document.get("date").toString()
+                            documentChange.document.getString("image")!!,
+                            documentChange.document.getString("time")!!,
+                            documentChange.document.getString("date")!!
                         )
                         photosList.add(fetchedPhotos)
                     }
