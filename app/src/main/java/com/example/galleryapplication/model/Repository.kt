@@ -1,10 +1,7 @@
 package com.example.galleryapplication.model
 
 import android.net.Uri
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.firestore.DocumentReference
 
 class Repository {
     private var firebaseModel = FirebaseModel()
@@ -14,7 +11,7 @@ class Repository {
     fun loginWithGoogle(authCredential: AuthCredential) =
         firebaseModel.loginWithGoogle(authCredential)
 
-    fun signUp(name: String, email: String, password: String, userImage: Uri) =
+    fun signUp(name: String, email: String, password: String, userImage: Uri?) =
         firebaseModel.signUp(name, email, password, userImage)
 
     fun passwordReset(email: String) =  firebaseModel.passwordReset(email)

@@ -2,8 +2,6 @@ package com.example.galleryapplication.model
 
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
-import androidx.constraintlayout.solver.widgets.Snapshot
 import com.example.galleryapplication.R
 import com.example.galleryapplication.view.Category
 import com.example.galleryapplication.view.Photos
@@ -13,13 +11,10 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import org.w3c.dom.Document
-import java.util.*
 import kotlin.collections.HashMap
 
 
@@ -53,7 +48,7 @@ class FirebaseModel {
         return fAuth
     }
 
-    fun signUp(name: String, email: String, password: String, userImage: Uri): Boolean {
+    fun signUp(name: String, email: String, password: String, userImage: Uri?): Boolean {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -63,14 +58,19 @@ class FirebaseModel {
         return true
     }
 
-    fun uploadUser(userImage: Uri, name: String, email: String) {
-        currentUserId = auth.currentUser!!.uid
+    fun uploadUser(userImage: Uri?, name: String, email: String) {
+        var userImage1 = userImage
+        if(userImage == null){
+            userImage1 = Uri.parse("android.resource://com.example.galleryapplication/" + R.drawable.profile_image)
+        }
+        currentUserId = auth.uid.toString()
+        Log.d("id",currentUserId)
 
         userProfileImageRef = FirebaseStorage.getInstance().reference.child("Profile Images")
 
         val filePath: StorageReference =
-            userProfileImageRef.child("image" + userImage.lastPathSegment)
-        filePath.putFile(userImage).addOnCompleteListener { task ->
+            userProfileImageRef.child("image" + userImage1!!.lastPathSegment)
+        filePath.putFile(userImage1).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 filePath.downloadUrl.addOnCompleteListener(OnCompleteListener { task ->
                     profileImageUrl = task.result.toString()
@@ -86,14 +86,7 @@ class FirebaseModel {
     private fun saveUserDataToFireStore(name: String, email: String) {
         userHashMap.put("Name", name)
         userHashMap.put("Email", email)
-        if (profileImageUrl != null) {
-            userHashMap.put("ProfileImage", profileImageUrl)
-        } else {
-            val uri: Uri =
-                Uri.parse("android.resource://com.example.galleryapplication/" + R.drawable.profile_image.toString())
-            userHashMap.put("ProfileImage", uri.toString())
-
-        }
+        userHashMap.put("ProfileImage", profileImageUrl)
         db.collection("users").document(currentUserId).set(userHashMap)
     }
 
@@ -103,7 +96,8 @@ class FirebaseModel {
     }
 
     fun fetchUserDetails(): Task<DocumentSnapshot> {
-        currentUserId = auth.currentUser!!.uid
+        currentUserId = auth.uid.toString()
+        Log.d("id",currentUserId)
         val documentReference: Task<DocumentSnapshot> =
             db.collection("users").document(currentUserId).get()
         return documentReference
@@ -129,7 +123,7 @@ class FirebaseModel {
 
 
     private fun updateDatabase(newImage: String) {
-        currentUserId = auth.currentUser!!.uid
+        currentUserId = auth.uid.toString()
         db.collection("users").document(currentUserId)
             .update("ProfileImage", newImage).addOnSuccessListener {
                 Log.i("updated successfully", "$it")
@@ -166,7 +160,7 @@ class FirebaseModel {
 
 
     private fun saveCategoryToFireStore(categoryName: String) {
-        currentUserId = auth.currentUser!!.uid
+        currentUserId = auth.uid.toString()
         if (categoryImageUrl != null)
             category = Category(categoryName, categoryImageUrl)
         else
@@ -180,14 +174,14 @@ class FirebaseModel {
     }
 
     fun fetchCategories(): CollectionReference {
-        currentUserId = auth.currentUser!!.uid
+        currentUserId = auth.uid.toString()
         val collectionReference =
             db.collection("users").document(currentUserId).collection("category")
         return collectionReference
     }
 
     fun addPhotos(selectedPhotoUri: Uri, timeInMilis: String, date: String, categoryName: String) {
-        currentUserId = auth.currentUser!!.uid
+        currentUserId = auth.uid.toString()
         userPhotosReference = FirebaseStorage.getInstance().getReference("CategoryImages/$currentUserId")
         val filePath: StorageReference = userPhotosReference.child("image" + selectedPhotoUri.lastPathSegment)
         filePath.putFile(selectedPhotoUri).addOnCompleteListener { task ->
@@ -204,7 +198,7 @@ class FirebaseModel {
     }
 
     private fun saveImagesToFireStore(timeInMilis: String, date: String, categoryName: String) {
-        currentUserId = auth.currentUser!!.uid
+        currentUserId = auth.uid.toString()
         photos = Photos(imageUrl, timeInMilis, date)
         db.collection("users").document(currentUserId).collection("category").document(categoryName)
             .collection("images")
@@ -212,7 +206,7 @@ class FirebaseModel {
     }
 
     fun fetchPhotos(categoryName: String): CollectionReference {
-        currentUserId = auth.currentUser!!.uid
+        currentUserId = auth.uid.toString()
         var collectionReference =
             db.collection("users").document(currentUserId).collection("category")
                 .document(categoryName)
@@ -221,7 +215,7 @@ class FirebaseModel {
     }
 
     fun deleteImage(image: String, categoryName: String, timeInMilis: String) {
-        currentUserId = auth.currentUser!!.uid
+        currentUserId = auth.uid.toString()
 
         //delete image from storage
         val storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(image)
@@ -247,7 +241,7 @@ class FirebaseModel {
     }
 
     fun fetchTimeLine(): StorageReference {
-        currentUserId = auth.currentUser!!.uid
+        currentUserId = auth.uid.toString()
         photosReference = FirebaseStorage.getInstance().getReference("CategoryImages/$currentUserId")
         return photosReference
     }

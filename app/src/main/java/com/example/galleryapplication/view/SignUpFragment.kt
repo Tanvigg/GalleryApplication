@@ -22,7 +22,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
 import com.example.galleryapplication.viewmodel.FirebaseViewModel
-import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.fragment_sign_up.progressbar
 import kotlinx.android.synthetic.main.fragment_sign_up.view.*
@@ -33,7 +32,7 @@ class SignUpFragment : Fragment(), View.OnClickListener {
 
     private val GALLERY = 1
     private val CAMERA_PERMISSION_REQUEST = 100
-    private lateinit var contentUri: Uri
+    private var contentUri: Uri ?= null
     private val CAMERA_REQUEST = 188
     private val viewModel: FirebaseViewModel by lazy {
         ViewModelProvider(this).get(FirebaseViewModel::class.java)
@@ -168,13 +167,13 @@ class SignUpFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setObservers() {
-        viewModel.getEmailError().observe(this, Observer {
+        viewModel.getEmailError().observe(viewLifecycleOwner, Observer {
             signup_email.error = it
         })
-        viewModel.getPasswordError().observe(this, Observer {
+        viewModel.getPasswordError().observe(viewLifecycleOwner, Observer {
             signup_password.error = it
         })
-        viewModel.getNameError().observe(this, Observer {
+        viewModel.getNameError().observe(viewLifecycleOwner, Observer {
             signup_name.error = it
         })
 

@@ -1,10 +1,8 @@
 package com.example.galleryapplication.viewmodel
 
-import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
-import android.provider.Contacts.People.setPhotoData
 import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -17,13 +15,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
-import kotlinx.android.synthetic.main.fragment_sign_up.*
-import java.sql.Time
+import com.google.firebase.firestore.*
 
 class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     private val repository = Repository()
@@ -36,8 +29,6 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     private val patternPassword = "^(?=.*\\d).{6,16}\$"
     //(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
     //{6,16}          : This limits the length of password from minimum 6 letters to maximum 16 letters.
-    private lateinit var categoryList: MutableList<Category>
-    private  lateinit  var photosList: MutableList<Photos>
     private var savedUserCategories: MutableLiveData<List<Category>> = MutableLiveData()
     private var savedUserPhotos: MutableLiveData<List<Photos>> = MutableLiveData()
     private var savedTimeLinePhotos: MutableLiveData<List<TimeLineModel>> = MutableLiveData()
@@ -130,7 +121,7 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     }
 
 
-    fun signUp(name: String, email: String, password: String, userImage: Uri): Boolean {
+    fun signUp(name: String, email: String, password: String, userImage: Uri?): Boolean {
         if (!validateName(name) || !validateEmail(email) || !validatePassword(password)) {
             return false
         } else {
@@ -203,29 +194,23 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     }
 
     fun fetchCategories(): LiveData<List<Category>> {
-        categoryList = mutableListOf()
-        if (categoryList.size > 0) {
-            categoryList.clear()
-        }
         repository.fetchCategories()
-            .addSnapshotListener { snapshot, e ->
+            .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
                 if (e != null) {
                     Log.w("TAG", "listen:error", e)
-                    return@addSnapshotListener
+                    return@EventListener
                 }
-                if (snapshot != null) {
-                    for (documentChange: DocumentChange in snapshot.documentChanges) {
-                        documentChange.document.data
+                val categoryList: MutableList<Category> = mutableListOf()
+                for (doc in value!!) {
+
                         val fetchedCategory = Category(
-                            documentChange.document.get("categoryName").toString(),
-                            documentChange.document.get("categoryImage").toString())
+                            doc.get("categoryName").toString(),
+                            doc.get("categoryImage").toString())
                         categoryList.add(fetchedCategory)
                     }
                     savedUserCategories.value = categoryList
-                } else {
-                    Log.d("TAG", "Query snapshot is null")
-                }
-            }
+                })
+
         return savedUserCategories
     }
 
@@ -234,30 +219,25 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     }
 
     fun fetchPhotos(categoryName: String): LiveData<List<Photos>> {
-        photosList =  mutableListOf()
-        if (photosList.size > 0) {
-            photosList.clear()
-        }
         repository.fetchPhotos(categoryName)
-            .addSnapshotListener { snapshot, e ->
+            .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
                 if (e != null) {
                     Log.w("TAG", "listen:error", e)
-                    return@addSnapshotListener
+                    return@EventListener
                 }
-                if (snapshot != null) {
-                    for (documentChange: DocumentChange in snapshot.documentChanges) {
+
+                val photosList: MutableList<Photos> =  mutableListOf()
+                for (doc in value!!) {
                         val fetchedPhotos = Photos(
-                            documentChange.document.getString("image")!!,
-                            documentChange.document.getString("time")!!,
-                            documentChange.document.getString("date")!!
+                            doc.getString("image")!!,
+                            doc.getString("time")!!,
+                            doc.getString("date")!!
                         )
                         photosList.add(fetchedPhotos)
                     }
                     savedUserPhotos.value = photosList
-                } else {
-                    Log.d("TAG", "Query snapshot is null")
-                }
-            }
+
+            })
         return savedUserPhotos
     }
 
