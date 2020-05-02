@@ -81,7 +81,7 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
         SHOW_PROGRESS,
         HIDE_PROGRESS,
         GO_TO_HOMEPAGE,
-        PASS_DATA_AND_GOTO_HOMEPAGE
+
     }
 
     private fun validateEmail(email: String): Boolean {
@@ -152,7 +152,7 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RC_SIGN_IN) {
             val result: GoogleSignInResult? =
-                Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             if (result!!.isSuccess) {
                 account = result.signInAccount!!
                 firebaseAuthWithGoogle(account)
@@ -169,10 +169,18 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
             GoogleAuthProvider.getCredential(account!!.idToken, null)
         repository.loginWithGoogle(authCredential).addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                uploadUserToFirebase(account.photoUrl,account.displayName,account.email)
+                loginState.value = LoginState.GO_TO_HOMEPAGE
             } else {
                 context.showToast("Authentication Error")
             }
         }
+    }
+
+    private fun uploadUserToFirebase(photoUrl: Uri?, displayName: String?, email: String?) {
+        repository.uploadUserToFirebase(photoUrl,displayName,email)
+
+
     }
 
     fun fetchUserDetails(): Task<DocumentSnapshot> {
@@ -189,8 +197,8 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     }
 
 
-    fun addCategory(categoryName: String, selectedPhotoUri: Uri) {
-        repository.addCategory(categoryName, selectedPhotoUri)
+    fun addCategory(categoryName: String, selectedPhotoUri: Uri) : Boolean {
+        return repository.addCategory(categoryName, selectedPhotoUri)
     }
 
     fun fetchCategories(): LiveData<List<Category>> {
@@ -203,7 +211,7 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
                 val categoryList: MutableList<Category> = mutableListOf()
                 for (doc in value!!) {
 
-                        val fetchedCategory = Category(
+                    val fetchedCategory = Category(
                             doc.get("categoryName").toString(),
                             doc.get("categoryImage").toString())
                         categoryList.add(fetchedCategory)

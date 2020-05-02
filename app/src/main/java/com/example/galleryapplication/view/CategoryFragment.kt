@@ -2,6 +2,7 @@ package com.example.galleryapplication.view
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -31,9 +32,11 @@ import kotlinx.android.synthetic.main.fragment_category.view.*
  */
 class CategoryFragment : Fragment(), View.OnClickListener {
     private val GALLERY = 1
-    private lateinit var contentUri: Uri
+    private  var contentUri: Uri?=null
     private lateinit var categoryImage: CircleImageView
     private lateinit var categoryName: String
+    private lateinit var loadingBar : ProgressDialog
+
 
 
     private lateinit var dp: OnDataPass
@@ -69,10 +72,10 @@ class CategoryFragment : Fragment(), View.OnClickListener {
                 output.category_recyclerView.layoutManager =
                     GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
                 output.category_recyclerView.itemAnimator = DefaultItemAnimator()
+                output.progressbar.visibility = View.GONE
             }
 
         })
-
         return output
     }
 
@@ -135,7 +138,16 @@ class CategoryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun createNewCategory() {
-        viewModel.addCategory(categoryName, contentUri)
+        if (contentUri == null) {
+            context!!.showToast("Please select an image for the category")
+        } else {
+            loadingBar = ProgressDialog(context, R.style.MyAlertDialogStyle)
+            loadingBar.setTitle("Adding category")
+            loadingBar.setMessage("Please wait")
+            loadingBar.show()
+            if (viewModel.addCategory(categoryName, contentUri!!))
+                loadingBar.dismiss()
+        }
     }
 
     interface OnDataPass {

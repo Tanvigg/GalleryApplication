@@ -145,14 +145,12 @@ class SignUpFragment : Fragment(), View.OnClickListener {
         val name = signup_name.text.toString()
         val email = signup_email.text.toString()
         val password = signup_password.text.toString()
-
-
-        progressbar.visibility = View.VISIBLE
+        progressbar.show()
         if (viewModel.signUp(name, email, password, contentUri)) {
             startActivity(Intent(context, GalleryActivity::class.java))
-            progressbar.visibility = View.GONE
+            progressbar.hide()
         } else {
-            progressbar.visibility = View.GONE
+            progressbar.hide()
             context!!.showToast("No Internet Connection")
         }
 

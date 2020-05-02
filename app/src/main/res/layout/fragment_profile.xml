@@ -24,6 +24,16 @@
             android:src="@drawable/profile_image"
             app:civ_border_color="#D8D6D6"
             app:civ_border_width="2dp" />
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/ballSpinFadeLoader"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:indicator="BallSpinFadeLoader"
+            app:indicator_color="#ffffff"
+            android:visibility="visible"
+            android:layout_gravity="center"
+            />
     </FrameLayout>
 
     <TextView

@@ -45,8 +45,7 @@ class TimeLineFragment : Fragment() {
                 GridLayoutManager(context, 3, GridLayoutManager.VERTICAL, false)
             output.timeline_recyclerView.itemAnimator = DefaultItemAnimator()
             output.timeline_recyclerView.adapter = timeLineAdapter
-
-
+            output.progressbar_timeline.visibility = View.GONE
         })
         return output
     }

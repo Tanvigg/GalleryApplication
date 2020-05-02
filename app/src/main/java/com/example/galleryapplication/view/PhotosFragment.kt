@@ -78,7 +78,7 @@ class PhotosFragment : Fragment() {
                 output.photos_recyclerView.layoutManager = GridLayoutManager(context,4,GridLayoutManager.VERTICAL,false)
                 output.photos_recyclerView.itemAnimator = DefaultItemAnimator()
                 output.photos_recyclerView.adapter = photoAdapter
-
+                output.progressbar_photos.visibility = View.GONE
             }
         })
             return output

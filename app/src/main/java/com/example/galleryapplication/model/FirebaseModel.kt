@@ -2,6 +2,7 @@ package com.example.galleryapplication.model
 
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toFile
 import com.example.galleryapplication.R
 import com.example.galleryapplication.view.Category
 import com.example.galleryapplication.view.Photos
@@ -15,6 +16,10 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStream
 import kotlin.collections.HashMap
 
 
@@ -28,7 +33,7 @@ class FirebaseModel {
     private lateinit var photosReference: StorageReference
 
 
-    private lateinit var profileImageUrl: String
+    private  var profileImageUrl: String? = null
     private lateinit var categoryImageUrl: String
     private lateinit var imageUrl: String
     private lateinit var currentUserId: String
@@ -47,6 +52,38 @@ class FirebaseModel {
         val fAuth: Task<AuthResult> = auth.signInWithCredential(authCredential)
         return fAuth
     }
+
+    fun uploadUserToFirebase(photoUrl: Uri?, displayName: String?, email: String?){
+
+        Log.d("dataGoogle",photoUrl.toString())
+        Log.d("dataGoogle",displayName)
+        Log.d("dataGoogle",email)
+
+       /* val tempFile : File = photoUrl!!.toFile()
+        Log.d("dataGoogle",tempFile.length().toString())
+        val stream : InputStream = FileInputStream(tempFile)
+        val uploadTask : UploadTask = userProfileImageRef.putStream(stream)
+*/
+        currentUserId = auth.uid.toString()
+        Log.d("id",currentUserId)
+
+        userProfileImageRef = FirebaseStorage.getInstance().reference.child("Profile Images")
+
+        val filePath: StorageReference = userProfileImageRef.child("image" + photoUrl!!.lastPathSegment)
+        filePath.putFile(photoUrl).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                filePath.downloadUrl.addOnCompleteListener(OnCompleteListener { task ->
+                    profileImageUrl = task.result.toString()
+                    Log.d("d1",profileImageUrl)
+                    saveUserDataToFireStore(displayName!!, email!!)
+                })
+            } else {
+                Log.d(TAG, "profile image upload Failed")
+
+            }
+        }
+    }
+
 
     fun signUp(name: String, email: String, password: String, userImage: Uri?): Boolean {
         auth.createUserWithEmailAndPassword(email, password)
@@ -81,12 +118,20 @@ class FirebaseModel {
 
             }
         }
+
     }
 
     private fun saveUserDataToFireStore(name: String, email: String) {
         userHashMap.put("Name", name)
         userHashMap.put("Email", email)
-        userHashMap.put("ProfileImage", profileImageUrl)
+        if(profileImageUrl != null) {
+            userHashMap.put("ProfileImage",profileImageUrl!!)
+        }
+        else {
+            userHashMap.put("ProfileImage"," ")
+        }
+
+        Log.d("d1",userHashMap.toString())
         db.collection("users").document(currentUserId).set(userHashMap)
     }
 
@@ -112,7 +157,7 @@ class FirebaseModel {
             if (task.isSuccessful) {
                 filePath.downloadUrl.addOnCompleteListener { task ->
                     profileImageUrl = task.result.toString()
-                    updateDatabase(profileImageUrl)
+                    updateDatabase(profileImageUrl!!)
                 }
             } else {
                 Log.d(TAG, "profile image upload Failed")
@@ -140,7 +185,7 @@ class FirebaseModel {
         auth.signOut()
     }
 
-    fun addCategory(categoryName: String, selectedPhotoUri: Uri) {
+    fun addCategory(categoryName: String, selectedPhotoUri: Uri):Boolean {
         userCategoryImagReference = FirebaseStorage.getInstance().reference.child("Category Images")
         val filePath: StorageReference =
             userCategoryImagReference.child("image" + selectedPhotoUri.lastPathSegment)
@@ -155,22 +200,21 @@ class FirebaseModel {
                 Log.d(TAG, "image upload Failed")
             }
         }
-
+        return true
     }
 
 
     private fun saveCategoryToFireStore(categoryName: String) {
         currentUserId = auth.uid.toString()
-        if (categoryImageUrl != null)
-            category = Category(categoryName, categoryImageUrl)
-        else
-            category = Category(
-                categoryName,
-                Uri.parse("android.resource://com.example.galleryapplication/" + R.drawable.profile_image.toString()).toString()
-            )
-
+        category = Category(categoryName,categoryImageUrl)
         db.collection("users").document(currentUserId).collection("category").document(categoryName)
-            .set(category)
+            .set(category).addOnSuccessListener {
+                Log.d(TAG,"Category uploaded successfully")
+            }
+            .addOnFailureListener {
+                Log.e("Failed", "$it")
+            }
+
     }
 
     fun fetchCategories(): CollectionReference {

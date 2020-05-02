@@ -9,12 +9,10 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.MediaScannerConnection
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -26,27 +24,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
 import com.example.galleryapplication.viewmodel.FirebaseViewModel
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
+import com.wang.avi.indicator.BallSpinFadeLoaderIndicator
 import kotlinx.android.synthetic.main.fragment_profile.*
-import kotlinx.android.synthetic.main.fragment_profile.userProfileImage
 import kotlinx.android.synthetic.main.fragment_profile.view.*
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.util.*
 
 /**
  * A simple [Fragment] subclass.
  */
-class ProfileFragment : Fragment(),View.OnClickListener {
+class ProfileFragment : Fragment(), View.OnClickListener {
     private lateinit var loadingBar: ProgressDialog
     private val GALLERY = 1
     private lateinit var contentUri: Uri
@@ -65,48 +51,61 @@ class ProfileFragment : Fragment(),View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         val output: View = inflater.inflate(R.layout.fragment_profile, container, false)
-
-        loadingBar = ProgressDialog(context, R.style.MyAlertDialogStyle)
-        viewModel.fetchUserDetails().addOnSuccessListener {
-            loadingBar.setTitle("Setting Profile ")
-            loadingBar.setMessage("please wait, while we are getting your Details...")
-            loadingBar.setCanceledOnTouchOutside(false)
-            loadingBar.show()
-
-            userName.setText(it.get("Name").toString())
-            userName.isEnabled = false
-            userEmail.setText(it.get("Email").toString())
-            userEmail.isEnabled = false
-            Picasso.get().load(it.get("ProfileImage").toString()).into(userProfileImage)
-            loadingBar.dismiss()
-        }
-
+        fetchUserDetails()
         output.button_signOut.setOnClickListener(this)
         output.image_frame.setOnClickListener(this)
-
 
         return output
     }
 
+    private fun fetchUserDetails() {
+        loadingBar = ProgressDialog(context, R.style.MyAlertDialogStyle)
+        loadingBar.setTitle("Setting Profile ")
+        loadingBar.setMessage("please wait, while we are getting your Details...")
+        loadingBar.setCanceledOnTouchOutside(false)
+        loadingBar.show()
+        viewModel.fetchUserDetails().addOnSuccessListener { document ->
+            if (document != null) {
+                userName.setText(document.get("Name").toString())
+                userName.isEnabled = false
+                userEmail.setText(document.get("Email").toString())
+                userEmail.isEnabled = false
+                Picasso.get().load(document.get("ProfileImage").toString()).into(userProfileImage)
+                loadingBar.dismiss()
+                ballSpinFadeLoader.visibility = View.GONE
+            }else{
+                Log.e("NO DOCUMENT", "No such document")
+            }
+        }
+            .addOnFailureListener {
+                context!!.showToast("Unable to fetch user details, please try again later.")
+            }
+
+
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onClick(v: View?) {
-        if(v == button_signOut){
+        if (v == button_signOut) {
             val builder = AlertDialog.Builder(context)
             builder.setMessage("Do You want to Logout of the app?")
             builder.setCancelable(true)
-            builder.setPositiveButton("YES"
+            builder.setPositiveButton(
+                "YES"
             ) { dialog, which ->
                 viewModel.logout()
                 val intent = Intent(context, MainActivity::class.java)
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
             }
-            builder.setNegativeButton("NO"
+            builder.setNegativeButton(
+                "NO"
             ) { dialog, which -> dialog!!.cancel() }
             builder.create().show()
 
 
-        }else if(v == image_frame){
+        } else if (v == image_frame) {
             RequestProfileImage()
         }
 
@@ -161,7 +160,8 @@ class ProfileFragment : Fragment(),View.OnClickListener {
             if (data != null) {
                 contentUri = data.data!!
                 viewModel.updateUserProfile(contentUri)
-                val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, contentUri)
+                val bitmap: Bitmap =
+                    MediaStore.Images.Media.getBitmap(context?.contentResolver, contentUri)
                 Toast.makeText(context, "Image Saved", Toast.LENGTH_SHORT).show()
                 userProfileImage.setImageBitmap(bitmap)
             }
@@ -174,6 +174,7 @@ class ProfileFragment : Fragment(),View.OnClickListener {
             MediaStore.Images.Media.insertImage(context.contentResolver, outImage, "Title", null)
         return Uri.parse(path)
     }
+
 
 
 

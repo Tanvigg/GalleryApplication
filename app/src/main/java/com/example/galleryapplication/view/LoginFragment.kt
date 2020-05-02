@@ -83,13 +83,13 @@ class LoginFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setObservers() {
-        viewModel.getEmailError().observe(this, Observer {
+        viewModel.getEmailError().observe(viewLifecycleOwner, Observer {
             login_email.error = it
         })
-        viewModel.getPasswordError().observe(this, Observer {
+        viewModel.getPasswordError().observe(viewLifecycleOwner, Observer {
             login_password.error = it
         })
-        viewModel.getLoginState().observe(this, Observer {
+        viewModel.getLoginState().observe(viewLifecycleOwner, Observer {
             when (it) {
                 FirebaseViewModel.LoginState.SHOW_PROGRESS -> progressbar.show()
                 FirebaseViewModel.LoginState.HIDE_PROGRESS -> progressbar.hide()
@@ -97,14 +97,6 @@ class LoginFragment : Fragment(), View.OnClickListener {
                     startActivity(Intent(context, GalleryActivity::class.java))
                     activity!!.finish()
                 }
-                FirebaseViewModel.LoginState.PASS_DATA_AND_GOTO_HOMEPAGE -> {
-                    val intent = Intent(context, GalleryActivity::class.java)
-                    intent.putExtra("emailId", viewModel.account.email)
-                    intent.putExtra("profilePic", viewModel.account.photoUrl)
-                    intent.putExtra("name",viewModel.account.displayName)
-                    startActivity(intent)
-                }
-
             }
         })
     }

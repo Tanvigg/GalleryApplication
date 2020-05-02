@@ -11,8 +11,9 @@ class Repository {
     fun loginWithGoogle(authCredential: AuthCredential) =
         firebaseModel.loginWithGoogle(authCredential)
 
-    fun signUp(name: String, email: String, password: String, userImage: Uri?) =
-        firebaseModel.signUp(name, email, password, userImage)
+    fun uploadUserToFirebase(photoUrl: Uri?, displayName: String?, email: String?) = firebaseModel.uploadUserToFirebase(photoUrl,displayName,email)
+
+    fun signUp(name: String, email: String, password: String, userImage: Uri?) = firebaseModel.signUp(name, email, password, userImage)
 
     fun passwordReset(email: String) =  firebaseModel.passwordReset(email)
 
@@ -24,7 +25,7 @@ class Repository {
         selectedPhotoUri!!
     )
 
-    fun addCategory(categoryName :String, selectedPhotoUri: Uri) = firebaseModel.addCategory(categoryName,selectedPhotoUri)
+    fun addCategory(categoryName:String, selectedPhotoUri: Uri) : Boolean = firebaseModel.addCategory(categoryName,selectedPhotoUri)
 
     fun fetchCategories() = firebaseModel.fetchCategories()
 
@@ -35,5 +36,6 @@ class Repository {
     fun deleteImage(image : String,categoryName: String,timeInMilis: String) = firebaseModel.deleteImage(image,categoryName,timeInMilis)
 
     fun fetchTimeLine() = firebaseModel.fetchTimeLine()
+
 
 }
