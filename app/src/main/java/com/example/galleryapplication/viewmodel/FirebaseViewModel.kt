@@ -22,19 +22,8 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
     private val repository = Repository()
     private var emailError = MutableLiveData<String>()
     private var passwordError = MutableLiveData<String>()
-    private var nameError = MutableLiveData<String>()
     private var loginState = MutableLiveData<LoginState>()
     lateinit var account: GoogleSignInAccount
-    private val patternEmail = "^[a-zA-Z0-9_!#\$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\$"
-    private val patternPassword = "^(?=.*\\d).{6,16}\$"
-    //(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
-    //{6,16}          : This limits the length of password from minimum 6 letters to maximum 16 letters.
-    private var savedUserCategories: MutableLiveData<List<Category>> = MutableLiveData()
-    private var savedUserPhotos: MutableLiveData<List<Photos>> = MutableLiveData()
-    private var savedTimeLinePhotos: MutableLiveData<List<TimeLineModel>> = MutableLiveData()
-    private lateinit var tList:List<TimeLineModel>
-
-
 
     fun getEmailError(): LiveData<String> {
         return emailError
@@ -42,10 +31,6 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
 
     fun getPasswordError(): LiveData<String> {
         return passwordError
-    }
-
-    fun getNameError(): LiveData<String> {
-        return nameError
     }
 
     fun getLoginState(): LiveData<LoginState> {
@@ -84,70 +69,6 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
 
     }
 
-    private fun validateEmail(email: String): Boolean {
-        if (TextUtils.isEmpty(email)) {
-            emailError.value = "Email can't be blank"
-            return false
-        } else if (!email.matches(patternEmail.toRegex())) {
-            emailError.value = "Invalid email Address"
-            return false
-        } else {
-            emailError.value = null
-            return true
-        }
-    }
-
-    private fun validatePassword(password: String): Boolean {
-        if (TextUtils.isEmpty(password)) {
-            passwordError.value = "Please Enter Password"
-            return false
-        } else if (!password.matches(patternPassword.toRegex())) {
-            passwordError.value = "Invalid Password"
-            return false
-        } else {
-            passwordError.value = null
-            return true
-        }
-    }
-
-    private fun validateName(name: String): Boolean {
-        if (TextUtils.isEmpty(name)) {
-            nameError.value = "Please Enter Name"
-            return false
-        } else {
-            nameError.value = null
-            return true
-        }
-    }
-
-
-    fun signUp(name: String, email: String, password: String, userImage: Uri?): Boolean {
-        if (!validateName(name) || !validateEmail(email) || !validatePassword(password)) {
-            return false
-        } else {
-            return repository.signUp(name, email, password, userImage)
-        }
-    }
-
-    fun passwordReset(email: String) {
-        if (TextUtils.isEmpty(email)) {
-            emailError.value = "Enter your registered Email Id"
-
-        } else {
-            loginState.value = LoginState.SHOW_PROGRESS
-            repository.passwordReset(email).addOnSuccessListener {
-                context.showToast("We have sent you instructions to reset your password!")
-                loginState.value = LoginState.HIDE_PROGRESS
-            }
-                .addOnFailureListener {
-                    context.showToast("Failed")
-                    loginState.value = LoginState.HIDE_PROGRESS
-
-
-                }
-        }
-    }
-
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RC_SIGN_IN) {
@@ -181,97 +102,5 @@ class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
         repository.uploadUserToFirebase(photoUrl,displayName,email)
 
 
-    }
-
-    fun fetchUserDetails(): Task<DocumentSnapshot> {
-        return repository.fetchUserDetails()
-    }
-
-    fun updateUserProfile(selectedPhotoUri: Uri?) {
-        repository.updateUserprofile(selectedPhotoUri)
-
-    }
-
-    fun logout() {
-        repository.logout()
-    }
-
-
-    fun addCategory(categoryName: String, selectedPhotoUri: Uri) : Boolean {
-        return repository.addCategory(categoryName, selectedPhotoUri)
-    }
-
-    fun fetchCategories(): LiveData<List<Category>> {
-        repository.fetchCategories()
-            .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
-                if (e != null) {
-                    Log.w("TAG", "listen:error", e)
-                    return@EventListener
-                }
-                val categoryList: MutableList<Category> = mutableListOf()
-                for (doc in value!!) {
-
-                    val fetchedCategory = Category(
-                            doc.get("categoryName").toString(),
-                            doc.get("categoryImage").toString())
-                        categoryList.add(fetchedCategory)
-                    }
-                    savedUserCategories.value = categoryList
-                })
-
-        return savedUserCategories
-    }
-
-    fun addPhotos(selectedPhotoUri: Uri, timeInMilis: String, date: String, categoryName: String) {
-        repository.addPhotos(selectedPhotoUri, timeInMilis, date, categoryName)
-    }
-
-    fun fetchPhotos(categoryName: String): LiveData<List<Photos>> {
-        repository.fetchPhotos(categoryName)
-            .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
-                if (e != null) {
-                    Log.w("TAG", "listen:error", e)
-                    return@EventListener
-                }
-
-                val photosList: MutableList<Photos> =  mutableListOf()
-                for (doc in value!!) {
-                        val fetchedPhotos = Photos(
-                            doc.getString("image")!!,
-                            doc.getString("time")!!,
-                            doc.getString("date")!!
-                        )
-                        photosList.add(fetchedPhotos)
-                    }
-                    savedUserPhotos.value = photosList
-
-            })
-        return savedUserPhotos
-    }
-
-    fun deleteImage(image: String, categoryName: String, timeInMilis: String) {
-        repository.deleteImage(image, categoryName, timeInMilis)
-    }
-
-    fun fetchTimeLine(): LiveData<List<TimeLineModel>> {
-        repository.fetchTimeLine().listAll()
-            .addOnSuccessListener {
-                val timeLineList = mutableListOf<TimeLineModel>()
-                for (i in it.items) {
-                    i.metadata.addOnSuccessListener {
-                        val timeLineModel = TimeLineModel(i.downloadUrl, it.creationTimeMillis)
-                        timeLineList.add(timeLineModel)
-
-                        tList = timeLineList.sortedByDescending {
-                            it.timeStamp as Long
-                        }
-                        savedTimeLinePhotos.value = tList
-                        Log.d("image",savedTimeLinePhotos.value.toString())
-
-                    }
-                }
-
-            }
-        return savedTimeLinePhotos
     }
 }
