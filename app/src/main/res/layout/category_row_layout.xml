@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="200dp"
     android:layout_height="wrap_content"
-    android:elevation="5dp"
+    app:cardElevation="5dp"
     app:cardCornerRadius="4dp"
     android:layout_gravity="center"
     app:contentPadding="2dp"
@@ -12,7 +12,7 @@
     android:layout_margin="4dp"
     android:id="@+id/mCardView">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -24,18 +24,27 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"/>
 
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/ballpulse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="visible"
+            app:indicator="BallPulse"
+            app:indicator_color="@color/colorAccent"
+            />
 
         <TextView
             android:id="@+id/category_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginTop="2dp"
             android:gravity="center"
             android:textSize="14sp"
             android:textStyle="bold"
-            tools:text="category name" />
+            tools:text="category name"
+            android:layout_below="@+id/category_image"/>
 
 
-    </LinearLayout>
+    </RelativeLayout>
 </androidx.cardview.widget.CardView>

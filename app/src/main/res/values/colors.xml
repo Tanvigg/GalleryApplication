@@ -26,4 +26,5 @@
     <color name="red_400">#EF5350</color>
     <color name="yellow_transparant">#33c9ce6a</color>
     <color name="category_dialoh_color">#375714</color>
+    <color name="timeLine_bordercolor">#ECEAEA</color>
 </resources>
