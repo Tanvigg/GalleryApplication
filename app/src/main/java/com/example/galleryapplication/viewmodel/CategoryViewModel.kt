@@ -9,7 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.galleryapplication.model.Repository
-import com.example.galleryapplication.view.Category
+import com.example.galleryapplication.view.Model.Category
 import com.example.galleryapplication.view.isNetworkAvailable
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.QuerySnapshot
@@ -56,9 +56,11 @@ class CategoryViewModel(val context: Application) : AndroidViewModel(context) {
                 }
                 val categoryList: MutableList<Category> = mutableListOf()
                 for (doc in value!!) {
-                    val fetchedCategory = Category(
-                        doc.get("categoryName").toString(),
-                        doc.get("categoryImage").toString())
+                    val fetchedCategory =
+                        Category(
+                            doc.get("categoryName").toString(),
+                            doc.get("categoryImage").toString()
+                        )
                     categoryList.add(fetchedCategory)
                     categoryStatus.value = CategoryStatus.HIDE_PROGRESS
                 }

@@ -1,8 +1,6 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Adapter
 
-import android.content.ContentValues.TAG
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.galleryapplication.R
+import com.example.galleryapplication.view.Model.Photos
+import com.example.galleryapplication.view.Interface.PhotoClickListener
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.wang.avi.AVLoadingIndicatorView

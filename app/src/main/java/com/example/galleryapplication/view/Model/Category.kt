@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Model
 
 class Category(var categoryName: String, var categoryImage: String) {
 

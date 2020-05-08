@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
+import com.example.galleryapplication.view.Activity.GalleryActivity
+import com.example.galleryapplication.view.hide
+import com.example.galleryapplication.view.show
 import com.example.galleryapplication.viewmodel.LoginViewModel
 import com.google.android.gms.auth.api.signin.*
 import com.google.firebase.auth.FirebaseAuth
@@ -21,7 +24,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
     private var mAuth: FirebaseAuth? = null
     var TAG = LoginFragment::class.java.name
     private lateinit var mGoogleSignInClient: GoogleSignInClient
-    private val forgetPasswordFragment = ForgetPasswordFragment()
+    private val forgetPasswordFragment =
+        ForgetPasswordFragment()
     private val viewModel: LoginViewModel by lazy {
         ViewModelProvider(this).get(LoginViewModel::class.java) }
 
@@ -74,7 +78,9 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
     private fun signIn() {
         val intent: Intent = mGoogleSignInClient.signInIntent
-        startActivityForResult(intent, RC_SIGN_IN)
+        startActivityForResult(intent,
+            RC_SIGN_IN
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

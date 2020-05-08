@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Fragment
 
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.galleryapplication.R
+import com.example.galleryapplication.view.Adapter.TimeLineAdapter
 import com.example.galleryapplication.viewmodel.TimeLineViewModel
 import kotlinx.android.synthetic.main.fragment_time_line.view.*
 
@@ -35,7 +36,11 @@ class TimeLineFragment : Fragment() {
 
 
         viewModel.fetchTimeLine().observe(viewLifecycleOwner, Observer {
-            timeLineAdapter = TimeLineAdapter(it,context!!)
+            timeLineAdapter =
+                TimeLineAdapter(
+                    it,
+                    context!!
+                )
             Log.d("imageIt",it.toString())
             output.timeline_recyclerView.layoutManager =
                 GridLayoutManager(context, 3, GridLayoutManager.VERTICAL, false)

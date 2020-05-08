@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Fragment
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -21,6 +21,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.galleryapplication.R
+import com.example.galleryapplication.view.Adapter.CategoryAdapter
+import com.example.galleryapplication.view.Interface.CategoryClickListener
+import com.example.galleryapplication.view.showToast
 import com.example.galleryapplication.viewmodel.CategoryViewModel
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.fragment_category.*
@@ -50,15 +53,17 @@ class CategoryFragment : Fragment(), View.OnClickListener {
         val output: View = inflater.inflate(R.layout.fragment_category, container, false)
         setObserver()
         output.fab_btn.setOnClickListener(this)
-        categoryAdapter = CategoryAdapter(context!!,object :
-            CategoryClickListener {
-            override fun onCategoryClick(categoryName: String) {
-                if (dp != null) {
-                    dp.sendCategoryName(categoryName)
-                    Log.d("name", categoryName)
-                }
-            }
-        })
+        categoryAdapter =
+            CategoryAdapter(context!!,
+                object :
+                    CategoryClickListener {
+                    override fun onCategoryClick(categoryName: String) {
+                        if (dp != null) {
+                            dp.sendCategoryName(categoryName)
+                            Log.d("name", categoryName)
+                        }
+                    }
+                })
 
         viewModel.fetchCategories().observe(viewLifecycleOwner, Observer { categories ->
             categories.let {

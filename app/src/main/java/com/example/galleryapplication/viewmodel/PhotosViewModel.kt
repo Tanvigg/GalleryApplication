@@ -5,7 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.galleryapplication.model.Repository
-import com.example.galleryapplication.view.Photos
+import com.example.galleryapplication.view.Model.Photos
 import com.example.galleryapplication.view.isNetworkAvailable
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.QuerySnapshot
@@ -57,11 +57,12 @@ class PhotosViewModel(val context: Application) : AndroidViewModel(context) {
 
                 val photosList: MutableList<Photos> = mutableListOf()
                 for (doc in value!!) {
-                    val fetchedPhotos = Photos(
-                        doc.getString("image")!!,
-                        doc.getString("time")!!,
-                        doc.getString("date")!!
-                    )
+                    val fetchedPhotos =
+                        Photos(
+                            doc.getString("image")!!,
+                            doc.getString("time")!!,
+                            doc.getString("date")!!
+                        )
                     photosList.add(fetchedPhotos)
                     photosStatus.value = PhotoStatus.HIDE_PROGRESS
                 }

@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.galleryapplication.R
+import com.example.galleryapplication.view.Model.TimeLineModel
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
@@ -16,7 +17,7 @@ class TimeLineAdapter : RecyclerView.Adapter<TimeLineAdapter.TimeLineViewHolder>
     var timeLineList: List<TimeLineModel>
     var context: Context
 
-    constructor(timeLineList : List<TimeLineModel>,context: Context) : super() {
+    constructor(timeLineList : List<TimeLineModel>, context: Context) : super() {
         this.context = context
         this.timeLineList = timeLineList
     }

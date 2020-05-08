@@ -4,19 +4,17 @@ import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.galleryapplication.model.Repository
 import com.example.galleryapplication.view.*
+import com.example.galleryapplication.view.Fragment.RC_SIGN_IN
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.*
 
 class LoginViewModel(val context: Application) : AndroidViewModel(context) {
     private val repository = Repository()

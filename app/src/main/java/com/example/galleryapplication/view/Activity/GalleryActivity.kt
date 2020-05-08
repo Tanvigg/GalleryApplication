@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Activity
 
 import android.os.Bundle
 import android.util.Log
@@ -7,18 +7,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.galleryapplication.*
+import com.example.galleryapplication.view.Fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.content_gallery.*
 
-class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener , CategoryFragment.OnDataPass, PhotosFragment.OnDataPass {
+class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener ,
+    CategoryFragment.OnDataPass,
+    PhotosFragment.OnDataPass {
     private val manager: FragmentManager = supportFragmentManager
     private val transaction = manager.beginTransaction()
-    private val categoryFragment = CategoryFragment()
-    private val timeLineFragment = TimeLineFragment()
-    private val profileFragment = ProfileFragment()
-    private var photosFragment = PhotosFragment()
-    private var imageViewerFragment = ImageViewerFragment()
+    private val categoryFragment =
+        CategoryFragment()
+    private val timeLineFragment =
+        TimeLineFragment()
+    private val profileFragment =
+        ProfileFragment()
+    private var photosFragment =
+        PhotosFragment()
+    private var imageViewerFragment =
+        ImageViewerFragment()
     private lateinit var catName : String
 
 

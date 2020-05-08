@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Fragment
 
 import android.Manifest
 import android.app.Activity
@@ -26,8 +26,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.galleryapplication.view.Adapter.PhotosAdapter
+import com.example.galleryapplication.view.Interface.PhotoClickListener
+import com.example.galleryapplication.view.showToast
 import com.example.galleryapplication.viewmodel.PhotosViewModel
-import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.fragment_photos.*
 
 
@@ -67,13 +69,17 @@ class PhotosFragment : Fragment() {
 
         viewModel.fetchPhotos(categoryName).observe(viewLifecycleOwner,Observer{photos ->
             photos.let {
-                photoAdapter = PhotosAdapter(context!!,object : PhotoClickListener {
-                    override fun onPhotoClick(time: String, date: String, image: String) {
-                        Log.d("date", date)
-                        dp.sendCurrentTime(time, date, image, categoryName)
-                    }
+                photoAdapter =
+                    PhotosAdapter(
+                        context!!,
+                        object :
+                            PhotoClickListener {
+                            override fun onPhotoClick(time: String, date: String, image: String) {
+                                Log.d("date", date)
+                                dp.sendCurrentTime(time, date, image, categoryName)
+                            }
 
-                })
+                        })
                 photoAdapter.setPhotoData(it)
                 output.photos_recyclerView.layoutManager = GridLayoutManager(context,4,GridLayoutManager.VERTICAL,false)
                 output.photos_recyclerView.itemAnimator = DefaultItemAnimator()

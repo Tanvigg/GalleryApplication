@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Adapter
 
 import android.content.Context
 import android.util.Log
@@ -9,6 +9,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.galleryapplication.R
+import com.example.galleryapplication.view.Interface.CategoryClickListener
+import com.example.galleryapplication.view.Model.Category
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.wang.avi.AVLoadingIndicatorView

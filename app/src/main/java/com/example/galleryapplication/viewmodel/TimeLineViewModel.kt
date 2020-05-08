@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.galleryapplication.model.Repository
-import com.example.galleryapplication.view.TimeLineModel
+import com.example.galleryapplication.view.Model.TimeLineModel
 
 class TimeLineViewModel(val context: Application) : AndroidViewModel(context) {
     private val repository = Repository()
@@ -20,7 +20,11 @@ class TimeLineViewModel(val context: Application) : AndroidViewModel(context) {
                 val timeLineList = mutableListOf<TimeLineModel>()
                 for (i in it.items) {
                     i.metadata.addOnSuccessListener {
-                        val timeLineModel = TimeLineModel(i.downloadUrl, it.creationTimeMillis)
+                        val timeLineModel =
+                            TimeLineModel(
+                                i.downloadUrl,
+                                it.creationTimeMillis
+                            )
                         timeLineList.add(timeLineModel)
 
                         tList = timeLineList.sortedByDescending {

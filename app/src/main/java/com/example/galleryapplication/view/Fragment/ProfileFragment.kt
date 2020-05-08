@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Fragment
 
 import android.Manifest
 import android.app.Activity
@@ -22,6 +22,8 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
+import com.example.galleryapplication.view.Activity.MainActivity
+import com.example.galleryapplication.view.showToast
 import com.example.galleryapplication.viewmodel.ProfileViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_profile.*

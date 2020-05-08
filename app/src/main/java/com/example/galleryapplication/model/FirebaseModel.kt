@@ -4,8 +4,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.galleryapplication.R
-import com.example.galleryapplication.view.Category
-import com.example.galleryapplication.view.Photos
+import com.example.galleryapplication.view.Model.Category
+import com.example.galleryapplication.view.Model.Photos
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthCredential
@@ -203,7 +203,10 @@ class FirebaseModel {
 
     private fun saveCategoryToFireStore(categoryName: String): DocumentReference {
         currentUserId = auth.uid.toString()
-        category = Category(categoryName, categoryImageUrl)
+        category = Category(
+            categoryName,
+            categoryImageUrl
+        )
         val documentReference: DocumentReference = db.collection("users").document(currentUserId)
         documentReference.collection("category").document(categoryName)
             .set(category)
@@ -266,7 +269,11 @@ class FirebaseModel {
         categoryName: String
     ): DocumentReference {
         currentUserId = auth.uid.toString()
-        photos = Photos(imageUrl, timeInMilis, date)
+        photos = Photos(
+            imageUrl,
+            timeInMilis,
+            date
+        )
         val documentReference: DocumentReference = db.collection("users").document(currentUserId)
         documentReference.collection("category").document(categoryName)
             .collection("images")

@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view
+package com.example.galleryapplication.view.Fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
+import com.example.galleryapplication.view.hide
+import com.example.galleryapplication.view.show
 import com.example.galleryapplication.viewmodel.LoginViewModel
 import com.example.galleryapplication.viewmodel.ForgetPasswordViewModel
 import kotlinx.android.synthetic.main.fragment_forget_password.*
