@@ -11,11 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.galleryapplication.R
-import com.example.galleryapplication.viewmodel.FirebaseViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
+import com.example.galleryapplication.viewmodel.TimeLineViewModel
 import kotlinx.android.synthetic.main.fragment_time_line.view.*
 
 /**
@@ -23,8 +19,8 @@ import kotlinx.android.synthetic.main.fragment_time_line.view.*
  */
 class TimeLineFragment : Fragment() {
     private lateinit var timeLineAdapter: TimeLineAdapter
-    private val viewModel: FirebaseViewModel by lazy {
-        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    private val viewModel: TimeLineViewModel by lazy {
+        ViewModelProvider(this).get(TimeLineViewModel::class.java)
     }
 
 
@@ -45,7 +41,7 @@ class TimeLineFragment : Fragment() {
                 GridLayoutManager(context, 3, GridLayoutManager.VERTICAL, false)
             output.timeline_recyclerView.itemAnimator = DefaultItemAnimator()
             output.timeline_recyclerView.adapter = timeLineAdapter
-            output.progressbar_timeline.visibility = View.GONE
+            output.linearscaleprogressloader.visibility = View.GONE
         })
         return output
     }

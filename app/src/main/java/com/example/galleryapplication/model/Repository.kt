@@ -1,6 +1,8 @@
 package com.example.galleryapplication.model
 
 import android.net.Uri
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.AuthCredential
 
 class Repository {
@@ -25,11 +27,35 @@ class Repository {
         selectedPhotoUri!!
     )
 
-    fun addCategory(categoryName:String, selectedPhotoUri: Uri) : Boolean = firebaseModel.addCategory(categoryName,selectedPhotoUri)
+    fun addCategory(categoryName:String, selectedPhotoUri: Uri):LiveData<Result<Boolean>>{
+        val result : MutableLiveData<Result<Boolean>> = MutableLiveData()
+        firebaseModel.addCategory(categoryName,selectedPhotoUri).observeForever{
+            it.onSuccess{
+                result.value = Result.success(it)
+            }
+            it.onFailure{
+                result.value  = Result.failure(it)
+            }
+        }
+        return result
+        }
+
+
 
     fun fetchCategories() = firebaseModel.fetchCategories()
 
-    fun addPhotos(selectedPhotoUri: Uri,timeInMilis:String,date:String,categoryName: String) = firebaseModel.addPhotos(selectedPhotoUri,timeInMilis,date,categoryName)
+    fun addPhotos(selectedPhotoUri: Uri,timeInMilis:String,date:String,categoryName: String):LiveData<Result<Boolean>>{
+        val result : MutableLiveData<Result<Boolean>> = MutableLiveData()
+        firebaseModel.addPhotos(selectedPhotoUri,timeInMilis,date,categoryName).observeForever{
+            it.onSuccess{
+                result.value = Result.success(it)
+            }
+            it.onFailure{
+                result.value  = Result.failure(it)
+            }
+        }
+        return result
+    }
 
     fun fetchPhotos(categoryName: String) = firebaseModel.fetchPhotos(categoryName)
 

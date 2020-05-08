@@ -2,7 +2,6 @@ package com.example.galleryapplication.view
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -22,7 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.galleryapplication.R
-import com.example.galleryapplication.viewmodel.FirebaseViewModel
+import com.example.galleryapplication.viewmodel.CategoryViewModel
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.fragment_category.*
 import kotlinx.android.synthetic.main.fragment_category.view.*
@@ -35,15 +34,11 @@ class CategoryFragment : Fragment(), View.OnClickListener {
     private  var contentUri: Uri?=null
     private lateinit var categoryImage: CircleImageView
     private lateinit var categoryName: String
-    private lateinit var loadingBar : ProgressDialog
-
-
-
     private lateinit var dp: OnDataPass
     private lateinit var categoryAdapter: CategoryAdapter
 
-    private val viewModel: FirebaseViewModel by lazy {
-        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    private val viewModel: CategoryViewModel by lazy {
+        ViewModelProvider(this).get(CategoryViewModel::class.java)
     }
 
 
@@ -53,7 +48,7 @@ class CategoryFragment : Fragment(), View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         val output: View = inflater.inflate(R.layout.fragment_category, container, false)
-
+        setObserver()
         output.fab_btn.setOnClickListener(this)
         categoryAdapter = CategoryAdapter(context!!,object :
             CategoryClickListener {
@@ -72,12 +67,35 @@ class CategoryFragment : Fragment(), View.OnClickListener {
                 output.category_recyclerView.layoutManager =
                     GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
                 output.category_recyclerView.itemAnimator = DefaultItemAnimator()
-                output.progressbar.visibility = View.GONE
             }
 
         })
         return output
     }
+
+
+    private fun setObserver() {
+        viewModel.getCategoryStatus().observe(viewLifecycleOwner, Observer {
+            when (it) {
+                CategoryViewModel.CategoryStatus.SHOW_PROGRESS -> showProgress()
+                CategoryViewModel.CategoryStatus.HIDE_PROGRESS -> hideProgesss()
+            }
+        })
+        viewModel.getError().observe(viewLifecycleOwner, Observer {
+            context!!.showToast(it)
+        })
+    }
+
+    private fun showProgress() {
+        progressbar.visibility = View.VISIBLE
+
+    }
+
+    private fun hideProgesss() {
+        progressbar.visibility = View.GONE
+
+    }
+
 
     override fun onClick(v: View?) {
         if (v == fab_btn) {
@@ -141,13 +159,9 @@ class CategoryFragment : Fragment(), View.OnClickListener {
         if (contentUri == null) {
             context!!.showToast("Please select an image for the category")
         } else {
-            loadingBar = ProgressDialog(context, R.style.MyAlertDialogStyle)
-            loadingBar.setTitle("Adding category")
-            loadingBar.setMessage("Please wait")
-            loadingBar.show()
-            if (viewModel.addCategory(categoryName, contentUri!!))
-                loadingBar.dismiss()
+            viewModel.addCategory(categoryName, contentUri!!)
         }
+
     }
 
     interface OnDataPass {

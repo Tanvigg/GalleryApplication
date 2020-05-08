@@ -20,13 +20,15 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.example.galleryapplication.R
-import com.example.galleryapplication.viewmodel.FirebaseViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_photos.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.galleryapplication.viewmodel.PhotosViewModel
+import kotlinx.android.synthetic.main.bottom_sheet.*
+import kotlinx.android.synthetic.main.fragment_photos.*
 
 
 /**
@@ -45,12 +47,9 @@ class PhotosFragment : Fragment() {
     private lateinit var calender: Calendar
     private lateinit var dp: OnDataPass
     private lateinit var imageUri: Uri
-    private val viewModel: FirebaseViewModel by lazy {
-        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    private val viewModel: PhotosViewModel by lazy {
+        ViewModelProvider(this).get(PhotosViewModel::class.java)
     }
-
-
-
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(
@@ -63,6 +62,7 @@ class PhotosFragment : Fragment() {
         val output: View = inflater.inflate(R.layout.fragment_photos, container, false)
 
         categoryName = arguments!!.getString("CategoryName").toString()
+        setObserver()
 
 
         viewModel.fetchPhotos(categoryName).observe(viewLifecycleOwner,Observer{photos ->
@@ -78,10 +78,31 @@ class PhotosFragment : Fragment() {
                 output.photos_recyclerView.layoutManager = GridLayoutManager(context,4,GridLayoutManager.VERTICAL,false)
                 output.photos_recyclerView.itemAnimator = DefaultItemAnimator()
                 output.photos_recyclerView.adapter = photoAdapter
-                output.progressbar_photos.visibility = View.GONE
             }
         })
             return output
+    }
+
+
+    private fun setObserver(){
+        viewModel.getPhotosStatus().observe(viewLifecycleOwner,Observer{
+            when(it){
+                PhotosViewModel.PhotoStatus.SHOW_PROGRESS -> showProgress()
+                PhotosViewModel.PhotoStatus.HIDE_PROGRESS -> hideProgesss()
+            }
+        })
+        viewModel.getError().observe(viewLifecycleOwner, Observer {
+            context!!.showToast(it)
+        })
+    }
+
+    private fun showProgress(){
+        progressbar_photos.visibility = View.VISIBLE
+
+    }
+    private fun  hideProgesss(){
+        progressbar_photos.visibility = View.GONE
+
     }
 
 
@@ -212,10 +233,12 @@ class PhotosFragment : Fragment() {
 
             btnGallery.setOnClickListener { v ->
                 choosePhotoFromGallery()
+                dialog.hide()
             }
 
             btnCamera.setOnClickListener { v ->
                 takePhotoFromCamera()
+                dialog.hide()
             }
             dialog.show()
 

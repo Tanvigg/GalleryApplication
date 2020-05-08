@@ -21,7 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
-import com.example.galleryapplication.viewmodel.FirebaseViewModel
+import com.example.galleryapplication.viewmodel.SignUpViewModel
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.fragment_sign_up.progressbar
 import kotlinx.android.synthetic.main.fragment_sign_up.view.*
@@ -34,8 +34,8 @@ class SignUpFragment : Fragment(), View.OnClickListener {
     private val CAMERA_PERMISSION_REQUEST = 100
     private var contentUri: Uri ?= null
     private val CAMERA_REQUEST = 188
-    private val viewModel: FirebaseViewModel by lazy {
-        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    private val viewModel: SignUpViewModel by lazy {
+        ViewModelProvider(this).get(SignUpViewModel::class.java)
     }
 
 

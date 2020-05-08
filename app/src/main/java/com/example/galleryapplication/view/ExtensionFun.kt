@@ -1,6 +1,7 @@
 package com.example.galleryapplication.view
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.view.View
 import android.widget.Toast
 
@@ -16,4 +17,9 @@ fun View.hide() {
 
 fun Context.showToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+}
+
+fun Context.isNetworkAvailable() : Boolean{
+    val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    return cm.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnected
 }

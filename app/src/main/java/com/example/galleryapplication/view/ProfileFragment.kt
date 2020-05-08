@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -23,9 +22,8 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
-import com.example.galleryapplication.viewmodel.FirebaseViewModel
+import com.example.galleryapplication.viewmodel.ProfileViewModel
 import com.squareup.picasso.Picasso
-import com.wang.avi.indicator.BallSpinFadeLoaderIndicator
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.view.*
 
@@ -38,8 +36,8 @@ class ProfileFragment : Fragment(), View.OnClickListener {
     private lateinit var contentUri: Uri
     private val CAMERA_REQUEST = 188
     private val MY_CAMERA_PERMISSION_REQUEST = 100
-    private val viewModel: FirebaseViewModel by lazy {
-        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    private val viewModel: ProfileViewModel by lazy {
+        ViewModelProvider(this).get(ProfileViewModel::class.java)
     }
 
 

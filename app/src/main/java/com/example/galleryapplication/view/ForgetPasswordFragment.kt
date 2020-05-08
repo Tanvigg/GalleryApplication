@@ -1,28 +1,24 @@
 package com.example.galleryapplication.view
 
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
-import com.example.galleryapplication.viewmodel.FirebaseViewModel
-import com.google.firebase.auth.FirebaseAuth
+import com.example.galleryapplication.viewmodel.LoginViewModel
+import com.example.galleryapplication.viewmodel.ForgetPasswordViewModel
 import kotlinx.android.synthetic.main.fragment_forget_password.*
 import kotlinx.android.synthetic.main.fragment_forget_password.view.*
-import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.android.synthetic.main.fragment_sign_up.*
 
 /**
  * A simple [Fragment] subclass.
  */
 class ForgetPasswordFragment : Fragment() {
-    private val viewModel: FirebaseViewModel by lazy {
-        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    private val viewModel: ForgetPasswordViewModel by lazy {
+        ViewModelProvider(this).get(ForgetPasswordViewModel::class.java)
     }
 
 
@@ -41,14 +37,14 @@ class ForgetPasswordFragment : Fragment() {
     }
 
     private fun setObservers() {
-        viewModel.getEmailError().observe(this, Observer {
+        viewModel.getEmailError().observe(viewLifecycleOwner, Observer {
             user_email.error = it
         })
 
-        viewModel.getLoginState().observe(this, Observer {
+        viewModel.getLoginState().observe(viewLifecycleOwner, Observer {
             when (it) {
-                FirebaseViewModel.LoginState.SHOW_PROGRESS -> progressbar_forgetPass.show()
-                FirebaseViewModel.LoginState.HIDE_PROGRESS -> progressbar_forgetPass.hide()
+                LoginViewModel.LoginState.SHOW_PROGRESS -> progressbar_forgetPass.show()
+                LoginViewModel.LoginState.HIDE_PROGRESS -> progressbar_forgetPass.hide()
             }
         })
 

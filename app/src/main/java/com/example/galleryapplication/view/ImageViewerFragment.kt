@@ -2,14 +2,10 @@ package com.example.galleryapplication.view
 
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
-import com.example.galleryapplication.viewmodel.FirebaseViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.galleryapplication.viewmodel.ImageViewerViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_image_viewer.view.*
 
@@ -21,8 +17,8 @@ class ImageViewerFragment : Fragment() {
     private lateinit var TimeinMilis: String
     private lateinit var categoryName: String
     private lateinit var Image: String
-    private val viewModel: FirebaseViewModel by lazy {
-        ViewModelProvider(this).get(FirebaseViewModel::class.java)
+    private val viewModel: ImageViewerViewModel by lazy {
+        ViewModelProvider(this).get(ImageViewerViewModel::class.java)
     }
 
 

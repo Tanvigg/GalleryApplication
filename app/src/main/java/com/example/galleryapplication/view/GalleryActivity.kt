@@ -11,8 +11,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.content_gallery.*
 
-class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener , CategoryFragment.OnDataPass ,
-    PhotosFragment.OnDataPass {
+class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener , CategoryFragment.OnDataPass, PhotosFragment.OnDataPass {
     private val manager: FragmentManager = supportFragmentManager
     private val transaction = manager.beginTransaction()
     private val categoryFragment = CategoryFragment()
@@ -43,17 +42,17 @@ class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
         if(item.itemId == R.id.category){
             supportActionBar!!.setTitle("Categories")
-            transaction1.replace(R.id.container,categoryFragment)
+            transaction1.replace(R.id.container,categoryFragment).addToBackStack(null)
         }
 
         else if(item.itemId == R.id.timeline){
             supportActionBar!!.title = "Your Timeline"
-            transaction1.replace(R.id.container,timeLineFragment)
+            transaction1.replace(R.id.container,timeLineFragment).addToBackStack(null)
         }
 
         else if(item.itemId == R.id.profile){
             supportActionBar!!.title = "Profile"
-            transaction1.replace(R.id.container,profileFragment)
+            transaction1.replace(R.id.container,profileFragment).addToBackStack(null)
         }
 
         transaction1.commit()

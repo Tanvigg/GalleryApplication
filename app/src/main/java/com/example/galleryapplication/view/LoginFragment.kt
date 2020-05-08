@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
-import com.example.galleryapplication.viewmodel.FirebaseViewModel
+import com.example.galleryapplication.viewmodel.LoginViewModel
 import com.google.android.gms.auth.api.signin.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -22,8 +22,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
     var TAG = LoginFragment::class.java.name
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private val forgetPasswordFragment = ForgetPasswordFragment()
-    private val viewModel: FirebaseViewModel by lazy {
-        ViewModelProvider(this).get(FirebaseViewModel::class.java) }
+    private val viewModel: LoginViewModel by lazy {
+        ViewModelProvider(this).get(LoginViewModel::class.java) }
 
 
     override fun onCreateView(
@@ -91,9 +91,9 @@ class LoginFragment : Fragment(), View.OnClickListener {
         })
         viewModel.getLoginState().observe(viewLifecycleOwner, Observer {
             when (it) {
-                FirebaseViewModel.LoginState.SHOW_PROGRESS -> progressbar.show()
-                FirebaseViewModel.LoginState.HIDE_PROGRESS -> progressbar.hide()
-                FirebaseViewModel.LoginState.GO_TO_HOMEPAGE -> {
+                LoginViewModel.LoginState.SHOW_PROGRESS -> progressbar.show()
+                LoginViewModel.LoginState.HIDE_PROGRESS -> progressbar.hide()
+                LoginViewModel.LoginState.GO_TO_HOMEPAGE -> {
                     startActivity(Intent(context, GalleryActivity::class.java))
                     activity!!.finish()
                 }
