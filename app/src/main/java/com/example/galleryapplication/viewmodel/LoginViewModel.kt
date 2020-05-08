@@ -18,7 +18,7 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.*
 
-class FirebaseViewModel(val context: Application) : AndroidViewModel(context) {
+class LoginViewModel(val context: Application) : AndroidViewModel(context) {
     private val repository = Repository()
     private var emailError = MutableLiveData<String>()
     private var passwordError = MutableLiveData<String>()

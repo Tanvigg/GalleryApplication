@@ -11,13 +11,13 @@ import com.example.galleryapplication.view.showToast
 class ForgetPasswordViewModel(val context: Application) : AndroidViewModel(context)  {
     private val repository = Repository()
     private var emailError = MutableLiveData<String>()
-    private var loginState = MutableLiveData<FirebaseViewModel.LoginState>()
+    private var loginState = MutableLiveData<LoginViewModel.LoginState>()
 
     fun getEmailError(): LiveData<String> {
         return emailError
     }
 
-    fun getLoginState(): LiveData<FirebaseViewModel.LoginState> {
+    fun getLoginState(): LiveData<LoginViewModel.LoginState> {
         return loginState
     }
 
@@ -26,14 +26,14 @@ class ForgetPasswordViewModel(val context: Application) : AndroidViewModel(conte
             emailError.value = "Enter your registered Email Id"
 
         } else {
-            loginState.value = FirebaseViewModel.LoginState.SHOW_PROGRESS
+            loginState.value = LoginViewModel.LoginState.SHOW_PROGRESS
             repository.passwordReset(email).addOnSuccessListener {
                 context.showToast("We have sent you instructions to reset your password!")
-                loginState.value = FirebaseViewModel.LoginState.HIDE_PROGRESS
+                loginState.value = LoginViewModel.LoginState.HIDE_PROGRESS
             }
                 .addOnFailureListener {
                     context.showToast("Failed")
-                    loginState.value = FirebaseViewModel.LoginState.HIDE_PROGRESS
+                    loginState.value = LoginViewModel.LoginState.HIDE_PROGRESS
 
 
                 }
