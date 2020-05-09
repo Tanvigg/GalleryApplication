@@ -1,7 +1,7 @@
 package com.example.galleryapplication.view.fragment
 
 import android.Manifest
-import android.app.Activity.RESULT_OK
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -14,30 +14,28 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
 import com.example.galleryapplication.model.getImageUri
-import com.example.galleryapplication.view.activity.GalleryActivity
 import com.example.galleryapplication.model.hide
 import com.example.galleryapplication.model.show
 import com.example.galleryapplication.model.showToast
+import com.example.galleryapplication.view.activity.GalleryActivity
 import com.example.galleryapplication.viewmodel.SignUpViewModel
 import kotlinx.android.synthetic.main.fragment_sign_up.*
-import kotlinx.android.synthetic.main.fragment_sign_up.progressbar
 import kotlinx.android.synthetic.main.fragment_sign_up.view.*
 
 
 class SignUpFragment : Fragment(), View.OnClickListener {
 
-
     private val GALLERY = 1
-    private val CAMERA_PERMISSION_REQUEST = 100
-    private var contentUri: Uri ?= null
     private val CAMERA_REQUEST = 188
+    private var contentUri: Uri ?= null
+    private val CAMERA_PERMISSION_REQUEST = 100
+
     private val viewModel: SignUpViewModel by lazy {
         ViewModelProvider(this).get(SignUpViewModel::class.java)
     }
@@ -48,7 +46,6 @@ class SignUpFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         setHasOptionsMenu(true)
         val output: View = inflater.inflate(R.layout.fragment_sign_up, container, false)
         output.sign_up.setOnClickListener(this)
@@ -117,7 +114,7 @@ class SignUpFragment : Fragment(), View.OnClickListener {
                     grantResults[2] == PackageManager.PERMISSION_GRANTED
 
                 if (cameraPermission && readExternalStorage && writeExternalStorage) {
-                    Toast.makeText(context, "All permission granted", Toast.LENGTH_SHORT).show()
+                    context!!.showToast("All permission granted")
                     val cameraIntent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
                     startActivityForResult(cameraIntent, CAMERA_REQUEST)
                 }
@@ -126,13 +123,13 @@ class SignUpFragment : Fragment(), View.OnClickListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             val bitmap: Bitmap = data?.extras?.get("data") as Bitmap
             userProfileImage.setImageBitmap(bitmap)
             //calling method to obtain uri from bitmap
             contentUri = getImageUri(context!!, bitmap)
 
-        } else if (requestCode == GALLERY && resultCode == RESULT_OK) {
+        } else if (requestCode == GALLERY && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 contentUri = data.data!!
                 val bitmap: Bitmap =
@@ -146,15 +143,7 @@ class SignUpFragment : Fragment(), View.OnClickListener {
         val name = signup_name.text.toString()
         val email = signup_email.text.toString()
         val password = signup_password.text.toString()
-        progressbar.show()
-        if (viewModel.signUp(name, email, password, contentUri)) {
-            startActivity(Intent(context, GalleryActivity::class.java))
-            progressbar.hide()
-        } else {
-            progressbar.hide()
-            context!!.showToast("No Internet Connection")
-        }
-
+        viewModel.signUp(name, email, password, contentUri)
     }
 
 
@@ -168,6 +157,19 @@ class SignUpFragment : Fragment(), View.OnClickListener {
         })
         viewModel.getNameError().observe(viewLifecycleOwner, Observer {
             signup_name.error = it
+        })
+        viewModel.getError().observe(viewLifecycleOwner, Observer {
+            context!!.showToast(it)
+        })
+        viewModel.getSignUpStatus().observe(viewLifecycleOwner, Observer {
+            when (it) {
+                SignUpViewModel.SignupStatus.SHOW_PROGRESS -> progressbar.show()
+                SignUpViewModel.SignupStatus.HIDE_PROGRESS -> progressbar.hide()
+                SignUpViewModel.SignupStatus.GO_TO_HOMEPAGE -> {
+                    startActivity(Intent(context, GalleryActivity::class.java))
+                    activity!!.finish()
+                }
+            }
         })
 
     }

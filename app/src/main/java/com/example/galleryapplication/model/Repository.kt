@@ -15,7 +15,20 @@ class Repository {
 
     fun uploadUserToFirebase(photoUrl: Uri?, displayName: String?, email: String?) = firebaseModel.uploadUserToFirebase(photoUrl,displayName,email)
 
-    fun signUp(name: String, email: String, password: String, userImage: Uri?) = firebaseModel.signUp(name, email, password, userImage)
+    fun signUp(name: String, email: String, password: String, userImage: Uri?): LiveData<Result<Boolean>>{
+        val result : MutableLiveData<Result<Boolean>> = MutableLiveData()
+        firebaseModel.signUp(name, email, password, userImage).observeForever {
+            it.onSuccess {
+                result.value = Result.success(it)
+            }
+            it.onFailure {
+                result.value = Result.failure(it)
+            }
+        }
+
+        return result
+    }
+
 
     fun passwordReset(email: String) =  firebaseModel.passwordReset(email)
 

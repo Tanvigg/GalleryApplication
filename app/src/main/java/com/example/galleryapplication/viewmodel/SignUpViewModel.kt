@@ -3,16 +3,18 @@ package com.example.galleryapplication.viewmodel
 import android.app.Application
 import android.net.Uri
 import android.text.TextUtils
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.example.galleryapplication.model.Repository
+import com.example.galleryapplication.model.isNetworkAvailable
 
 class SignUpViewModel(val context: Application) : AndroidViewModel(context) {
     private val repository = Repository()
     private var emailError = MutableLiveData<String>()
     private var passwordError = MutableLiveData<String>()
     private var nameError = MutableLiveData<String>()
+    private var errMessage = MutableLiveData<String>()
+
+    private val signupStatus = MediatorLiveData<SignupStatus>()
     private val patternEmail = "^[a-zA-Z0-9_!#\$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\$"
     private val patternPassword = "^(?=.*\\d).{6,16}\$"
     //(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
@@ -29,6 +31,14 @@ class SignUpViewModel(val context: Application) : AndroidViewModel(context) {
 
     fun getPasswordError(): LiveData<String> {
         return passwordError
+    }
+
+    fun getSignUpStatus(): LiveData<SignupStatus> {
+        return signupStatus
+    }
+
+    fun getError(): LiveData<String> {
+        return errMessage
     }
 
     private fun validateEmail(email: String): Boolean {
@@ -66,12 +76,34 @@ class SignUpViewModel(val context: Application) : AndroidViewModel(context) {
             return true
         }
     }
-    fun signUp(name: String, email: String, password: String, userImage: Uri?): Boolean {
-        if (!validateName(name) || !validateEmail(email) || !validatePassword(password)) {
-            return false
+
+    fun signUp(name: String, email: String, password: String, userImage: Uri?) {
+        if (!(context.isNetworkAvailable())) {
+            errMessage.value = "Network not available"
+        } else if (!validateName(name) || !validateEmail(email) || !validatePassword(password)) {
+            return
         } else {
-            return repository.signUp(name, email, password, userImage)
+            signupStatus.value = SignupStatus.SHOW_PROGRESS
+            signupStatus.addSource(repository.signUp(name, email, password, userImage), Observer {
+                it.onSuccess {
+                    signupStatus.value = SignupStatus.GO_TO_HOMEPAGE
+                    signupStatus.value = SignupStatus.HIDE_PROGRESS
+                }
+                it.onFailure {
+                    errMessage.value = it.toString()
+                    signupStatus.value = SignupStatus.HIDE_PROGRESS
+
+
+                }
+            })
         }
+    }
+
+    enum class SignupStatus {
+        SHOW_PROGRESS,
+        HIDE_PROGRESS,
+        GO_TO_HOMEPAGE,
+
     }
 
 }

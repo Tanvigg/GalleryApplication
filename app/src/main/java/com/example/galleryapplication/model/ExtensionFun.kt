@@ -1,5 +1,6 @@
 package com.example.galleryapplication.model
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.net.ConnectivityManager
@@ -7,7 +8,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
-
+import androidx.core.app.ActivityCompat
 
 
 fun View.show() {
@@ -40,4 +41,8 @@ fun checkFlag(isGoogleSignUp : Int, context:Context){
     editor.putInt("isGoogleSignUp", isGoogleSignUp)
     editor.apply()
 }
+
+
+
+
 

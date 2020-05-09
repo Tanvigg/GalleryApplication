@@ -2,6 +2,7 @@ package com.example.galleryapplication.model
 
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.galleryapplication.R
 import com.google.android.gms.tasks.OnCompleteListener
@@ -62,22 +63,24 @@ class FirebaseModel {
         profileImageUrl = photoUrl.toString()
         Log.d("d1", profileImageUrl)
         saveUserDataToFireStore(displayName!!, email!!)
-
-
     }
 
 
-    fun signUp(name: String, email: String, password: String, userImage: Uri?): Boolean {
+    fun signUp(name: String, email: String, password: String, userImage: Uri?):MutableLiveData<Result<Boolean>> {
+        val result = MutableLiveData<Result<Boolean>>()
         auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    uploadUser(userImage, name, email)
-                }
+            .addOnSuccessListener {
+                uploadUser(userImage, name, email)
+                result.value = Result.success(true)
             }
-        return true
+            .addOnFailureListener{
+                result.value = Result.failure(it)
+            }
+        return result
     }
 
-    fun uploadUser(userImage: Uri?, name: String, email: String) {
+    fun uploadUser(userImage: Uri?, name: String, email: String): MutableLiveData<Result<Boolean>> {
+        val result = MutableLiveData<Result<Boolean>>()
         var userImage1 = userImage
         if (userImage == null) {
             userImage1 =
@@ -94,17 +97,32 @@ class FirebaseModel {
             if (task.isSuccessful) {
                 filePath.downloadUrl.addOnCompleteListener(OnCompleteListener { task ->
                     profileImageUrl = task.result.toString()
-                    saveUserDataToFireStore(name, email)
+                    saveUserDataToFireStore(name, email).addSnapshotListener { snapshot, e ->
+                        if (e != null) {
+                            Log.w(TAG, "Listen failed.", e)
+                            return@addSnapshotListener
+                        }
+
+                        if (snapshot != null) {
+                            result.value = Result.success(true)
+
+                        } else {
+                            result.value = e?.let { Result.failure(it) }
+
+                        }
+
+                    }
                 })
             } else {
                 Log.d(TAG, "profile image upload Failed")
 
             }
         }
+        return result
 
     }
 
-    private fun saveUserDataToFireStore(name: String, email: String) {
+    private fun saveUserDataToFireStore(name: String, email: String): DocumentReference {
         userHashMap.put("Name", name)
         userHashMap.put("Email", email)
         if (profileImageUrl != null) {
@@ -114,13 +132,21 @@ class FirebaseModel {
         }
 
         Log.d("d1", userHashMap.toString())
-        db.collection("users").document(currentUserId).set(userHashMap)
+        val documentReference: DocumentReference = db.collection("users").document(currentUserId)
+        documentReference.set(userHashMap)
+        return documentReference
     }
+
+
+
 
     fun passwordReset(email: String): Task<Void> {
         val fAuth: Task<Void> = auth.sendPasswordResetEmail(email)
         return fAuth
     }
+
+
+
 
     fun fetchUserDetails(): Task<DocumentSnapshot> {
         currentUserId = auth.uid.toString()
@@ -129,6 +155,8 @@ class FirebaseModel {
             db.collection("users").document(currentUserId).get()
         return documentReference
     }
+
+
 
 
     fun updateUserProfile(selectedPhotoUri: Uri): MutableLiveData<Result<Boolean>> {

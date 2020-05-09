@@ -46,7 +46,6 @@ class ProfileFragment : Fragment(), View.OnClickListener {
         ViewModelProvider(this).get(ProfileViewModel::class.java)
     }
 
-
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(
         inflater: LayoutInflater,
