@@ -3,7 +3,6 @@ package com.example.galleryapplication.view.fragment
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -24,8 +23,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
 import com.example.galleryapplication.model.LoadingDialog
-import com.example.galleryapplication.view.activity.MainActivity
 import com.example.galleryapplication.model.showToast
+import com.example.galleryapplication.view.activity.MainActivity
 import com.example.galleryapplication.viewmodel.ProfileViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -67,7 +66,13 @@ class ProfileFragment : Fragment(), View.OnClickListener {
             when(it){
                 ProfileViewModel.ProfileStatus.SHOW_PROGRESS -> showProgress()
                 ProfileViewModel.ProfileStatus.HIDE_PROGRESS -> hideProgress()
+                ProfileViewModel.ProfileStatus.SHOW_PROGRESS_ON_UPDATE -> showProgressOnUpdate()
+                ProfileViewModel.ProfileStatus.HIDE_PROGRESS_ON_UPDATE -> hideProfressOnUpdate()
             }
+        })
+
+        viewModel.getError().observe(viewLifecycleOwner, Observer {
+            context!!.showToast(it)
         })
     }
 
@@ -78,8 +83,18 @@ class ProfileFragment : Fragment(), View.OnClickListener {
     private fun hideProgress(){
         loadingDialog!!.dismissDialog()
         ballSpinFadeLoader.visibility = View.GONE
-
     }
+
+    private fun showProgressOnUpdate() {
+        ballSpinFadeLoader.visibility = View.VISIBLE
+    }
+
+    private fun hideProfressOnUpdate() {
+        ballSpinFadeLoader.visibility = View.GONE
+        context!!.showToast("Profile Picture updates successfully")
+    }
+
+
 
     private fun fetchUserDetails() {
         viewModel.fetchUserDetails().addOnSuccessListener { document ->
@@ -188,8 +203,4 @@ class ProfileFragment : Fragment(), View.OnClickListener {
             MediaStore.Images.Media.insertImage(context.contentResolver, outImage, "Title", null)
         return Uri.parse(path)
     }
-
-
-
-
 }

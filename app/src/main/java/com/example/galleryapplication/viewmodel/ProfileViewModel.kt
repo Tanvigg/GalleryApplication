@@ -42,14 +42,14 @@ class ProfileViewModel(val context: Application) : AndroidViewModel(context) {
         if (!(context.isNetworkAvailable())) {
             errMessage.value = "Network not available"
         }
-        profileStatus.value = ProfileStatus.SHOW_PROGRESS
+        profileStatus.value = ProfileStatus.SHOW_PROGRESS_ON_UPDATE
         profileStatus.addSource(repository.updateUserprofile(selectedPhotoUri), Observer {
             it.onSuccess {
-                profileStatus.value = ProfileStatus.HIDE_PROGRESS
+                profileStatus.value = ProfileStatus.HIDE_PROGRESS_ON_UPDATE
             }
             it.onFailure {
                 errMessage.value = it.toString()
-                profileStatus.value = ProfileStatus.HIDE_PROGRESS
+                profileStatus.value = ProfileStatus.HIDE_PROGRESS_ON_UPDATE
 
             }
 
@@ -64,5 +64,7 @@ class ProfileViewModel(val context: Application) : AndroidViewModel(context) {
     enum class ProfileStatus {
         SHOW_PROGRESS,
         HIDE_PROGRESS,
+        SHOW_PROGRESS_ON_UPDATE,
+        HIDE_PROGRESS_ON_UPDATE,
     }
 }
