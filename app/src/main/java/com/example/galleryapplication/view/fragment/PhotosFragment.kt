@@ -3,7 +3,6 @@ package com.example.galleryapplication.view.fragment
 import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -13,24 +12,25 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.galleryapplication.R
+import com.example.galleryapplication.model.getImageUri
+import com.example.galleryapplication.model.showToast
+import com.example.galleryapplication.view.Interface.PhotoClickListener
+import com.example.galleryapplication.view.adapter.PhotosAdapter
+import com.example.galleryapplication.viewmodel.PhotosViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.android.synthetic.main.fragment_photos.*
 import kotlinx.android.synthetic.main.fragment_photos.view.*
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.GridLayoutManager
-import com.example.galleryapplication.view.adapter.PhotosAdapter
-import com.example.galleryapplication.view.Interface.PhotoClickListener
-import com.example.galleryapplication.model.showToast
-import com.example.galleryapplication.viewmodel.PhotosViewModel
-import kotlinx.android.synthetic.main.fragment_photos.*
 
 
 /**
@@ -196,13 +196,6 @@ class PhotosFragment : Fragment() {
         viewModel.addPhotos(contentUri,currentTimeInMilis,date,categoryName)
     }
 
-
-    fun getImageUri(context: Context, inImage: Bitmap): Uri {
-        val outImage: Bitmap = Bitmap.createScaledBitmap(inImage, 2000, 2000, true)
-        val path: String =
-            MediaStore.Images.Media.insertImage(context.contentResolver, outImage, "Title", null)
-        return Uri.parse(path)
-    }
 
     interface OnDataPass {
         fun sendCurrentTime(

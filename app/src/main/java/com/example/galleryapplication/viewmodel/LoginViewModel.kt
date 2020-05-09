@@ -68,7 +68,6 @@ class LoginViewModel(val context: Application) : AndroidViewModel(context) {
 
     }
 
-
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RC_SIGN_IN) {
             val result: GoogleSignInResult? =

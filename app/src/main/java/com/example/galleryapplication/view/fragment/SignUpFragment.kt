@@ -3,7 +3,6 @@ package com.example.galleryapplication.view.fragment
 import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
+import com.example.galleryapplication.model.getImageUri
 import com.example.galleryapplication.view.activity.GalleryActivity
 import com.example.galleryapplication.model.hide
 import com.example.galleryapplication.model.show
@@ -122,10 +122,7 @@ class SignUpFragment : Fragment(), View.OnClickListener {
                     startActivityForResult(cameraIntent, CAMERA_REQUEST)
                 }
             }
-        }
-
-
-    }
+        } }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -161,12 +158,6 @@ class SignUpFragment : Fragment(), View.OnClickListener {
     }
 
 
-    fun getImageUri(context: Context, inImage: Bitmap): Uri {
-        val outImage: Bitmap = Bitmap.createScaledBitmap(inImage, 2000, 2000, true)
-        val path: String =
-            MediaStore.Images.Media.insertImage(context.contentResolver, outImage, "Title", null)
-        return Uri.parse(path)
-    }
 
     private fun setObservers() {
         viewModel.getEmailError().observe(viewLifecycleOwner, Observer {

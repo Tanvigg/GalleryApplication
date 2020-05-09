@@ -23,6 +23,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
 import com.example.galleryapplication.model.LoadingDialog
+import com.example.galleryapplication.model.getImageUri
 import com.example.galleryapplication.model.showToast
 import com.example.galleryapplication.view.activity.MainActivity
 import com.example.galleryapplication.viewmodel.ProfileViewModel
@@ -195,12 +196,5 @@ class ProfileFragment : Fragment(), View.OnClickListener {
                 userProfileImage.setImageBitmap(bitmap)
             }
         }
-    }
-
-    fun getImageUri(context: Context, inImage: Bitmap): Uri {
-        val outImage: Bitmap = Bitmap.createScaledBitmap(inImage, 2000, 2000, true)
-        val path: String =
-            MediaStore.Images.Media.insertImage(context.contentResolver, outImage, "Title", null)
-        return Uri.parse(path)
     }
 }
