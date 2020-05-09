@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
@@ -40,6 +41,10 @@ class ProfileFragment : Fragment(), View.OnClickListener {
     private val CAMERA_REQUEST = 188
     private val MY_CAMERA_PERMISSION_REQUEST = 100
     private var loadingDialog:LoadingDialog ?= null
+    private lateinit var sharedPreferences: SharedPreferences
+
+
+
     private val viewModel: ProfileViewModel by lazy {
         ViewModelProvider(this).get(ProfileViewModel::class.java)
     }
@@ -57,8 +62,16 @@ class ProfileFragment : Fragment(), View.OnClickListener {
         setObservers()
         fetchUserDetails()
         output.button_signOut.setOnClickListener(this)
-        output.image_frame.setOnClickListener(this)
+        output.change_profile_image.setOnClickListener(this)
 
+        sharedPreferences =
+            context!!.getSharedPreferences("mySharedPreference", Context.MODE_PRIVATE)
+        val flag = sharedPreferences.getInt("isGoogleSignUp", -1)
+        if (flag == -1) {
+            context!!.showToast("No Data Found")
+        } else {
+            output.change_profile_image.visibility = View.GONE
+        }
         return output
     }
 
@@ -135,7 +148,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
             builder.create().show()
 
 
-        } else if (v == image_frame) {
+        } else if (v == change_profile_image) {
             RequestProfileImage()
         }
 
