@@ -60,8 +60,6 @@ class ProfileFragment : Fragment(), View.OnClickListener {
         output.button_signOut.setOnClickListener(this)
         output.change_profile_image.setOnClickListener(this)
 
-
-
         sharedPreferences = context!!.getSharedPreferences("mySharedPreference", Context.MODE_PRIVATE)
         val flag = sharedPreferences.getInt("isGoogleSignUp", -1)
         Log.d("flag", flag.toString())

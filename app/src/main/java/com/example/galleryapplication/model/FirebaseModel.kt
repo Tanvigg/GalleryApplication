@@ -102,25 +102,21 @@ class FirebaseModel {
                             Log.w(TAG, "Listen failed.", e)
                             return@addSnapshotListener
                         }
-
                         if (snapshot != null) {
                             result.value = Result.success(true)
 
                         } else {
                             result.value = e?.let { Result.failure(it) }
-
                         }
-
                     }
                 })
             } else {
                 Log.d(TAG, "profile image upload Failed")
-
             }
         }
         return result
-
     }
+
 
     private fun saveUserDataToFireStore(name: String, email: String): DocumentReference {
         userHashMap.put("Name", name)
@@ -128,7 +124,7 @@ class FirebaseModel {
         if (profileImageUrl != null) {
             userHashMap.put("ProfileImage", profileImageUrl!!)
         } else {
-            userHashMap.put("ProfileImage", " ")
+            userHashMap.put("ProfileImage"," ")
         }
 
         Log.d("d1", userHashMap.toString())
