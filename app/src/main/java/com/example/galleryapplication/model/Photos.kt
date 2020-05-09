@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Model
+package com.example.galleryapplication.model
 
 import android.widget.ImageView
 

@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Activity
+package com.example.galleryapplication.view.activity
 
 import android.os.Bundle
 import android.util.Log
@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.galleryapplication.*
-import com.example.galleryapplication.view.Fragment.*
+import com.example.galleryapplication.view.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_gallery.*
 import kotlinx.android.synthetic.main.content_gallery.*

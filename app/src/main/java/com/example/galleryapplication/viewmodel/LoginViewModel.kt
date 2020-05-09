@@ -8,8 +8,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.galleryapplication.model.Repository
-import com.example.galleryapplication.view.*
-import com.example.galleryapplication.view.Fragment.RC_SIGN_IN
+import com.example.galleryapplication.model.showToast
+import com.example.galleryapplication.view.fragment.RC_SIGN_IN
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
@@ -48,6 +48,7 @@ class LoginViewModel(val context: Application) : AndroidViewModel(context) {
             repository.login(email, password).addOnSuccessListener {
                 context.showToast("Welcome")
                 loginState.value = LoginState.GO_TO_HOMEPAGE
+                loginState.value = LoginState.HIDE_PROGRESS
             }
 
                 .addOnFailureListener {

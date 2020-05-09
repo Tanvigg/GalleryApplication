@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.Fragment.PhotosFragment">
+    tools:context=".view.fragment.PhotosFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photos_recyclerView"
@@ -16,6 +16,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
+        android:visibility="gone"
        />
 
 

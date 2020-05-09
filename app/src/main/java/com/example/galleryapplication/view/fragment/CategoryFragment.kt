@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Fragment
+package com.example.galleryapplication.view.fragment
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -21,9 +21,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.galleryapplication.R
-import com.example.galleryapplication.view.Adapter.CategoryAdapter
+import com.example.galleryapplication.view.adapter.CategoryAdapter
 import com.example.galleryapplication.view.Interface.CategoryClickListener
-import com.example.galleryapplication.view.showToast
+import com.example.galleryapplication.model.showToast
 import com.example.galleryapplication.viewmodel.CategoryViewModel
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.fragment_category.*
@@ -92,12 +92,12 @@ class CategoryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun showProgress() {
-        progressbar.visibility = View.VISIBLE
+        linearscaleprogressloader.visibility = View.VISIBLE
 
     }
 
     private fun hideProgesss() {
-        progressbar.visibility = View.GONE
+        linearscaleprogressloader.visibility = View.GONE
 
     }
 

@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             app:indicator="BallSpinFadeLoader"
             app:indicator_color="#ffffff"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_gravity="center"
             />
     </FrameLayout>

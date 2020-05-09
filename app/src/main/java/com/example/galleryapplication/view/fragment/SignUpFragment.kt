@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Fragment
+package com.example.galleryapplication.view.fragment
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
@@ -21,10 +21,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
-import com.example.galleryapplication.view.Activity.GalleryActivity
-import com.example.galleryapplication.view.hide
-import com.example.galleryapplication.view.show
-import com.example.galleryapplication.view.showToast
+import com.example.galleryapplication.view.activity.GalleryActivity
+import com.example.galleryapplication.model.hide
+import com.example.galleryapplication.model.show
+import com.example.galleryapplication.model.showToast
 import com.example.galleryapplication.viewmodel.SignUpViewModel
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import kotlinx.android.synthetic.main.fragment_sign_up.progressbar

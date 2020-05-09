@@ -9,8 +9,8 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.galleryapplication.model.Repository
-import com.example.galleryapplication.view.Model.Category
-import com.example.galleryapplication.view.isNetworkAvailable
+import com.example.galleryapplication.model.Category
+import com.example.galleryapplication.model.isNetworkAvailable
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.QuerySnapshot
 

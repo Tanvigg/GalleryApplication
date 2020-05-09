@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Fragment
+package com.example.galleryapplication.view.fragment
 
 import android.os.Bundle
 import android.util.Log
@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.galleryapplication.R
-import com.example.galleryapplication.view.Adapter.TimeLineAdapter
+import com.example.galleryapplication.view.adapter.TimeLineAdapter
 import com.example.galleryapplication.viewmodel.TimeLineViewModel
 import kotlinx.android.synthetic.main.fragment_time_line.view.*
 

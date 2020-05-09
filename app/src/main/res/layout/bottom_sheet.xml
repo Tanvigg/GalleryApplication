@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="200dp"
     android:background="@drawable/bottom_sheet_background"
     android:orientation="vertical"
     android:padding="16dp"
@@ -17,19 +17,21 @@
         android:fontFamily="@font/belleza"
         android:text="Choose Category Photo"
         android:textSize="20sp"
+        android:textColor="@color/black"
         />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="30dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
 
         <ImageButton

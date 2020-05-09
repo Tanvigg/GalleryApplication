@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Adapter
+package com.example.galleryapplication.view.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,8 +8,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.galleryapplication.R
-import com.example.galleryapplication.view.Model.TimeLineModel
+import com.example.galleryapplication.model.TimeLineModel
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.timeline_rowlayout.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -17,7 +18,7 @@ class TimeLineAdapter : RecyclerView.Adapter<TimeLineAdapter.TimeLineViewHolder>
     var timeLineList: List<TimeLineModel>
     var context: Context
 
-    constructor(timeLineList : List<TimeLineModel>, context: Context) : super() {
+    constructor(timeLineList: List<TimeLineModel>, context: Context) : super() {
         this.context = context
         this.timeLineList = timeLineList
     }
@@ -40,15 +41,16 @@ class TimeLineAdapter : RecyclerView.Adapter<TimeLineAdapter.TimeLineViewHolder>
         }
         val formatter = SimpleDateFormat("MMM dd, hh:mm aaa")
         val timeDD: String = formatter.format(Date(timeLineList[position].timeStamp))
-        holder.date.setText(timeDD)
+        holder.date.text = timeDD
     }
 
     override fun getItemCount(): Int {
         return timeLineList.size
     }
+
     class TimeLineViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val timeline_image: ImageView = itemView.findViewById(R.id.timeline_image)
-        val date: TextView = itemView.findViewById(R.id.date)
+        val timeline_image: ImageView = itemView.timeline_image
+        val date: TextView = itemView.date
 
 
     }

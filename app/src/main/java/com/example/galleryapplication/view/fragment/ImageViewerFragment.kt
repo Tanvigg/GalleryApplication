@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Fragment
+package com.example.galleryapplication.view.fragment
 
 import android.os.Bundle
 import android.view.*

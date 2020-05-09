@@ -4,8 +4,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.galleryapplication.R
-import com.example.galleryapplication.view.Model.Category
-import com.example.galleryapplication.view.Model.Photos
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthCredential
@@ -133,7 +131,9 @@ class FirebaseModel {
     }
 
 
-    fun updateUserProfile(selectedPhotoUri: Uri) {
+    fun updateUserProfile(selectedPhotoUri: Uri): MutableLiveData<Result<Boolean>> {
+        val result = MutableLiveData<Result<Boolean>>()
+        currentUserId = auth.uid.toString()
         userProfileImageRef = FirebaseStorage.getInstance().reference.child("Profile Images")
         val filePath: StorageReference =
             userProfileImageRef.child("image" + selectedPhotoUri.lastPathSegment)
@@ -141,27 +141,21 @@ class FirebaseModel {
             if (task.isSuccessful) {
                 filePath.downloadUrl.addOnCompleteListener { task ->
                     profileImageUrl = task.result.toString()
-                    updateDatabase(profileImageUrl!!)
+                    db.collection("users").document(currentUserId)
+                        .update("ProfileImage", profileImageUrl).addOnSuccessListener {
+                            result.value = Result.success(true)
+
+                        }
+                        .addOnFailureListener {
+                            result.value = Result.failure(it)
+                        }
                 }
             } else {
                 Log.d(TAG, "profile image upload Failed")
 
             }
         }
-    }
-
-
-    private fun updateDatabase(newImage: String) {
-        currentUserId = auth.uid.toString()
-        db.collection("users").document(currentUserId)
-            .update("ProfileImage", newImage).addOnSuccessListener {
-                Log.i("updated successfully", "$it")
-
-            }
-            .addOnFailureListener {
-                Log.i("Failed", "$it")
-
-            }
+        return result
     }
 
 

@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.galleryapplication.model.Repository
-import com.example.galleryapplication.view.showToast
+import com.example.galleryapplication.model.showToast
 
 class ForgetPasswordViewModel(val context: Application) : AndroidViewModel(context)  {
     private val repository = Repository()

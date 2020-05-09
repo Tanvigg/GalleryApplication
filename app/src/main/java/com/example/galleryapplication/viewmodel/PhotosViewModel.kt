@@ -5,8 +5,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.galleryapplication.model.Repository
-import com.example.galleryapplication.view.Model.Photos
-import com.example.galleryapplication.view.isNetworkAvailable
+import com.example.galleryapplication.model.Photos
+import com.example.galleryapplication.model.isNetworkAvailable
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.QuerySnapshot
 

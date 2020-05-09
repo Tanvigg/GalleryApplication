@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Fragment
+package com.example.galleryapplication.view.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
-import com.example.galleryapplication.view.Activity.GalleryActivity
-import com.example.galleryapplication.view.hide
-import com.example.galleryapplication.view.show
+import com.example.galleryapplication.view.activity.GalleryActivity
+import com.example.galleryapplication.model.hide
+import com.example.galleryapplication.model.show
 import com.example.galleryapplication.viewmodel.LoginViewModel
 import com.google.android.gms.auth.api.signin.*
 import com.google.firebase.auth.FirebaseAuth

@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Activity
+package com.example.galleryapplication.view.activity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -6,8 +6,8 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.example.galleryapplication.R
-import com.example.galleryapplication.view.Fragment.LoginFragment
-import com.example.galleryapplication.view.Fragment.SignUpFragment
+import com.example.galleryapplication.view.fragment.LoginFragment
+import com.example.galleryapplication.view.fragment.SignUpFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

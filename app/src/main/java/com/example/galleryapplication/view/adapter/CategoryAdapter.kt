@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Adapter
+package com.example.galleryapplication.view.adapter
 
 import android.content.Context
 import android.util.Log
@@ -10,10 +10,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.galleryapplication.R
 import com.example.galleryapplication.view.Interface.CategoryClickListener
-import com.example.galleryapplication.view.Model.Category
+import com.example.galleryapplication.model.Category
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.wang.avi.AVLoadingIndicatorView
+import kotlinx.android.synthetic.main.category_row_layout.view.*
 
 class CategoryAdapter : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
     private lateinit var categoryList: List<Category>
@@ -65,21 +66,17 @@ class CategoryAdapter : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>
         return categoryList.size
     }
 
-    fun setCategory(fetchedCategory :List<Category>){
+    fun setCategory(fetchedCategory : List<Category>){
         categoryList = fetchedCategory
         notifyDataSetChanged()
 
     }
 
-
-
     class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var categoryName: TextView = itemView.findViewById(R.id.category_name)
-        var categoryImage: ImageView = itemView.findViewById(R.id.category_image)
-        var imageProgressBar: AVLoadingIndicatorView = itemView.findViewById(R.id.ballpulse)
+        var categoryName: TextView = itemView.category_name
+        var categoryImage: ImageView = itemView.category_image
+        var imageProgressBar: AVLoadingIndicatorView = itemView.ballpulse
 
     }
-
-
 }
 

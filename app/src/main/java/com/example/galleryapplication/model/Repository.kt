@@ -23,9 +23,18 @@ class Repository {
 
     fun logout() = firebaseModel.logout()
 
-    fun updateUserprofile(selectedPhotoUri : Uri?)  = firebaseModel.updateUserProfile(
-        selectedPhotoUri!!
-    )
+    fun updateUserprofile(selectedPhotoUri: Uri?): LiveData<Result<Boolean>> {
+        val result: MutableLiveData<Result<Boolean>> = MutableLiveData()
+        firebaseModel.updateUserProfile(selectedPhotoUri!!).observeForever {
+            it.onSuccess {
+                result.value = Result.success(it)
+            }
+            it.onFailure {
+                result.value = Result.failure(it)
+            }
+        }
+        return result
+    }
 
     fun addCategory(categoryName:String, selectedPhotoUri: Uri):LiveData<Result<Boolean>>{
         val result : MutableLiveData<Result<Boolean>> = MutableLiveData()

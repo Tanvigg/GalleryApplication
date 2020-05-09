@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Fragment
+package com.example.galleryapplication.view.fragment
 
 import android.Manifest
 import android.app.Activity
@@ -26,9 +26,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.galleryapplication.view.Adapter.PhotosAdapter
+import com.example.galleryapplication.view.adapter.PhotosAdapter
 import com.example.galleryapplication.view.Interface.PhotoClickListener
-import com.example.galleryapplication.view.showToast
+import com.example.galleryapplication.model.showToast
 import com.example.galleryapplication.viewmodel.PhotosViewModel
 import kotlinx.android.synthetic.main.fragment_photos.*
 
@@ -37,9 +37,7 @@ import kotlinx.android.synthetic.main.fragment_photos.*
  * A simple [Fragment] subclass.
  */
 class PhotosFragment : Fragment() {
-
     private val TAG: String = "PhotoFragment"
-
     private val CAMERA_REQUEST = 188
     private val GALLERY = 1
     private val MY_CAMERA_PERMISSION_REQUEST = 100

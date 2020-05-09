@@ -1,4 +1,4 @@
-package com.example.galleryapplication.view.Adapter
+package com.example.galleryapplication.view.adapter
 
 import android.content.Context
 import android.util.Log
@@ -8,11 +8,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.galleryapplication.R
-import com.example.galleryapplication.view.Model.Photos
+import com.example.galleryapplication.model.Photos
 import com.example.galleryapplication.view.Interface.PhotoClickListener
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.wang.avi.AVLoadingIndicatorView
+import kotlinx.android.synthetic.main.image_row_layout.view.*
 import java.lang.Exception
 
 
@@ -66,8 +67,8 @@ class PhotosAdapter : RecyclerView.Adapter<PhotosAdapter.ImageViewHolder> {
     }
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var image: ImageView = itemView.findViewById(R.id.image)
-        var imageProgressBar : AVLoadingIndicatorView = itemView.findViewById(R.id.ballpulse)
+        var image: ImageView = itemView.image
+        var imageProgressBar : AVLoadingIndicatorView = itemView.ballpulse
 
     }
 

@@ -1,5 +1,4 @@
-package com.example.galleryapplication.view
-
+package com.example.galleryapplication.model
 import android.content.Context
 import android.net.ConnectivityManager
 import android.view.View
@@ -23,3 +22,5 @@ fun Context.isNetworkAvailable() : Boolean{
     val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     return cm.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnected
 }
+
+
