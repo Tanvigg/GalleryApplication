@@ -143,7 +143,15 @@ class SignUpFragment : Fragment(), View.OnClickListener {
         val name = signup_name.text.toString()
         val email = signup_email.text.toString()
         val password = signup_password.text.toString()
-        viewModel.signUp(name, email, password, contentUri)
+        viewModel.signUp(name, email, password, contentUri).observe(viewLifecycleOwner, Observer {
+            it.onSuccess {
+                progressbar.hide()
+            }
+            it.onFailure {
+                progressbar.show()
+            }
+
+        })
     }
 
 

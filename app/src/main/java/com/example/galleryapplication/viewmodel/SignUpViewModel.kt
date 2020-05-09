@@ -6,6 +6,7 @@ import android.text.TextUtils
 import androidx.lifecycle.*
 import com.example.galleryapplication.model.Repository
 import com.example.galleryapplication.model.isNetworkAvailable
+import com.google.android.gms.tasks.Task
 
 class SignUpViewModel(val context: Application) : AndroidViewModel(context) {
     private val repository = Repository()
@@ -77,26 +78,27 @@ class SignUpViewModel(val context: Application) : AndroidViewModel(context) {
         }
     }
 
-    fun signUp(name: String, email: String, password: String, userImage: Uri?) {
+    fun signUp(name: String, email: String, password: String, userImage: Uri?): LiveData<Result<Boolean>> {
+        val result: MutableLiveData<Result<Boolean>> = MutableLiveData()
         if (!(context.isNetworkAvailable())) {
             errMessage.value = "Network not available"
         } else if (!validateName(name) || !validateEmail(email) || !validatePassword(password)) {
-            return
         } else {
             signupStatus.value = SignupStatus.SHOW_PROGRESS
             signupStatus.addSource(repository.signUp(name, email, password, userImage), Observer {
                 it.onSuccess {
-                    signupStatus.value = SignupStatus.GO_TO_HOMEPAGE
+                    result.value = Result.success(it)
                     signupStatus.value = SignupStatus.HIDE_PROGRESS
+                    signupStatus.value = SignupStatus.GO_TO_HOMEPAGE
                 }
                 it.onFailure {
+                    result.value = Result.failure(it)
                     errMessage.value = it.toString()
                     signupStatus.value = SignupStatus.HIDE_PROGRESS
-
-
                 }
             })
         }
+        return result
     }
 
     enum class SignupStatus {

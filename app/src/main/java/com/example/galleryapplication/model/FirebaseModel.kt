@@ -49,11 +49,6 @@ class FirebaseModel {
     }
 
     fun uploadUserToFirebase(photoUrl: Uri?, displayName: String?, email: String?) {
-
-        Log.d("dataGoogle", photoUrl.toString())
-        Log.d("dataGoogle", displayName)
-        Log.d("dataGoogle", email)
-
         currentUserId = auth.uid.toString()
         Log.d("id", currentUserId)
 
