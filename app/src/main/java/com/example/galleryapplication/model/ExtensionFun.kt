@@ -1,5 +1,6 @@
 package com.example.galleryapplication.model
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.Uri
@@ -33,4 +34,10 @@ fun getImageUri(context: Context, inImage: Bitmap): Uri {
     return Uri.parse(path)
 }
 
+fun checkFlag(isGoogleSignUp : Int, context:Context){
+    var sharedPreferences = context.getSharedPreferences("mySharedPreference", Context.MODE_PRIVATE)
+    val editor = sharedPreferences!!.edit()
+    editor.putInt("isGoogleSignUp", isGoogleSignUp)
+    editor.apply()
+}
 

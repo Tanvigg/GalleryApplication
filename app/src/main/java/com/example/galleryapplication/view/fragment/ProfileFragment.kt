@@ -17,7 +17,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -43,8 +42,6 @@ class ProfileFragment : Fragment(), View.OnClickListener {
     private var loadingDialog:LoadingDialog ?= null
     private lateinit var sharedPreferences: SharedPreferences
 
-
-
     private val viewModel: ProfileViewModel by lazy {
         ViewModelProvider(this).get(ProfileViewModel::class.java)
     }
@@ -64,14 +61,16 @@ class ProfileFragment : Fragment(), View.OnClickListener {
         output.button_signOut.setOnClickListener(this)
         output.change_profile_image.setOnClickListener(this)
 
-        sharedPreferences =
-            context!!.getSharedPreferences("mySharedPreference", Context.MODE_PRIVATE)
+
+
+        sharedPreferences = context!!.getSharedPreferences("mySharedPreference", Context.MODE_PRIVATE)
         val flag = sharedPreferences.getInt("isGoogleSignUp", -1)
-        if (flag == -1) {
-            context!!.showToast("No Data Found")
-        } else {
+        Log.d("flag", flag.toString())
+        if (flag == 1)
             output.change_profile_image.visibility = View.GONE
-        }
+        else
+            output.change_profile_image.visibility = View.VISIBLE
+
         return output
     }
 
@@ -205,7 +204,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
                 viewModel.updateUserProfile(contentUri)
                 val bitmap: Bitmap =
                     MediaStore.Images.Media.getBitmap(context?.contentResolver, contentUri)
-                Toast.makeText(context, "Image Saved", Toast.LENGTH_SHORT).show()
+                context!!.showToast("Image Saved")
                 userProfileImage.setImageBitmap(bitmap)
             }
         }

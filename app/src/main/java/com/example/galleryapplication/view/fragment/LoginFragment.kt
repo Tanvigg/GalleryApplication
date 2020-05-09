@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
+import com.example.galleryapplication.model.checkFlag
 import com.example.galleryapplication.model.hide
 import com.example.galleryapplication.model.show
 import com.example.galleryapplication.view.activity.GalleryActivity
@@ -27,7 +28,6 @@ class LoginFragment : Fragment(), View.OnClickListener {
     private var mAuth: FirebaseAuth? = null
     var TAG = LoginFragment::class.java.name
     private var isGoogleSignUp = 0
-    private var sharedPreferences: SharedPreferences? = null
 
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private val forgetPasswordFragment =
@@ -47,18 +47,21 @@ class LoginFragment : Fragment(), View.OnClickListener {
         output.button_signIn.setOnClickListener(this)
         output.forget.setOnClickListener(this)
         output.login_Google.setOnClickListener(this)
+        setObservers()
+
 
         val gso: GoogleSignInOptions =
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
         mGoogleSignInClient = GoogleSignIn.getClient(context!!, gso)
-        setObservers()
         return output
     }
 
     override fun onClick(v: View?) {
         when (v) {
             button_signIn -> {
+                isGoogleSignUp = 0
+                checkFlag(isGoogleSignUp,context!!)
                 val email = login_email.text.toString()
                 val password = login_password.text.toString()
                 viewModel.login(email, password)
@@ -71,13 +74,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
             }
             login_Google -> {
                 isGoogleSignUp = 1
-                sharedPreferences =
-                    context!!.getSharedPreferences("mySharedPreference", Context.MODE_PRIVATE)
-                val editor = sharedPreferences!!.edit()
-                editor.putInt("isGoogleSignUp", isGoogleSignUp)
-                editor.apply()
+                checkFlag(isGoogleSignUp,context!!)
                 signIn()
-
             }
         }
     }
