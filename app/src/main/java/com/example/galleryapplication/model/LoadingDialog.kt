@@ -17,7 +17,9 @@ class LoadingDialog(activity:Activity) {
         text1.text = dialogMessage1
         text2.text = dialogMessage2
         builder.setView(view)
+        builder.setCancelable(false)
         dialog = builder.create()
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
 
     }

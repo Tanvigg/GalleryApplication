@@ -100,7 +100,7 @@ class FirebaseModel {
         userHashMap.put("ProfileImage", profileImageUrl)
         Log.d("d1", userHashMap.toString())
         db.collection("users").document(currentUserId).set(userHashMap).addOnSuccessListener {
-            Log.e("FIREBASE MODEL ", "successful")
+            Log.e("FIREBASE MODEL", "successful")
         }
             .addOnFailureListener {
                 Log.e("Error", "$it")

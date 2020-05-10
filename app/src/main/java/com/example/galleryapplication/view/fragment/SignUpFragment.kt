@@ -142,9 +142,9 @@ class SignUpFragment : Fragment(), View.OnClickListener {
         val email = signup_email.text.toString()
         val password = signup_password.text.toString()
         if(viewModel.signUp(name, email, password, contentUri)){
-            context!!.showToast("Sign up successful")
             startActivity(Intent(context, GalleryActivity::class.java))
             activity!!.finish()
+            context!!.showToast("Sign up successful")
 
         }
     }

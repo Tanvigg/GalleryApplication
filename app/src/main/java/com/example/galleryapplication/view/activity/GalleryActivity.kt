@@ -4,9 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.example.galleryapplication.*
+import com.example.galleryapplication.R
 import com.example.galleryapplication.view.fragment.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_gallery.*
@@ -17,31 +18,22 @@ class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
     PhotosFragment.OnDataPass {
     private val manager: FragmentManager = supportFragmentManager
     private val transaction = manager.beginTransaction()
-    private val categoryFragment =
-        CategoryFragment()
-    private val timeLineFragment =
-        TimeLineFragment()
-    private val profileFragment =
-        ProfileFragment()
-    private var photosFragment =
-        PhotosFragment()
-    private var imageViewerFragment =
-        ImageViewerFragment()
+    private val categoryFragment = CategoryFragment()
+    private val timeLineFragment = TimeLineFragment()
+    private val profileFragment = ProfileFragment()
+    private var photosFragment = PhotosFragment()
+    private var imageViewerFragment = ImageViewerFragment()
     private lateinit var catName : String
-
-
-
+    private lateinit var date : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
-
         setSupportActionBar(toolbar_gallery)
         supportActionBar!!.title = "Categories"
         bottomNav.setOnNavigationItemSelectedListener(this)
         transaction.replace(R.id.container,categoryFragment)
         transaction.commit()
-
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -68,10 +60,35 @@ class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
 
     }
 
+    override fun onBackPressed() {
+        Log.i("LOG", "BACK PRESS")
+        val manager = supportFragmentManager
+        val list: List<Fragment> = manager.fragments
+        Log.i("Backstack count", manager.backStackEntryCount.toString())
+        if (manager.backStackEntryCount > 0) {
+            super.onBackPressed()
+            val currentFragment = manager.findFragmentById(R.id.container)
+            Log.i("Current Fragment", currentFragment.toString())
+            if (currentFragment is CategoryFragment) {
+                bottomNav.menu.getItem(0).setChecked(true)
+                supportActionBar!!.title = "Categories"
+            } else if (currentFragment is TimeLineFragment) {
+                bottomNav.menu.getItem(1).setChecked(true)
+            } else if (currentFragment is ProfileFragment) {
+                bottomNav.menu.getItem(2).setChecked(true)
+            } else if (currentFragment is ImageViewerFragment){
+                bottomNav.menu.getItem(0).setChecked(true)
+                supportActionBar!!.title = date
+            } else if (currentFragment is PhotosFragment) {
+                bottomNav.menu.getItem(0).setChecked(true)
+                supportActionBar!!.title = catName
+            }
+        }
+    }
+
     override fun sendCategoryName(categoryName: String) {
         catName = categoryName
         val bundle = Bundle()
-
         bundle.putString("CategoryName",categoryName)
         photosFragment.arguments = bundle
         supportActionBar!!.title = categoryName
@@ -84,6 +101,7 @@ class GalleryActivity : AppCompatActivity(), BottomNavigationView.OnNavigationIt
     }
 
     override fun sendCurrentTime(currentTime: String,currentDate : String,image :String,categoryName: String) {
+        date = currentDate
         val bundle = Bundle()
         bundle.putString("Time",currentTime)
         bundle.putString("Date",currentDate)
