@@ -20,8 +20,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.galleryapplication.R
 import com.example.galleryapplication.model.getImageUri
-import com.example.galleryapplication.model.hide
-import com.example.galleryapplication.model.show
 import com.example.galleryapplication.model.showToast
 import com.example.galleryapplication.view.activity.GalleryActivity
 import com.example.galleryapplication.viewmodel.SignUpViewModel
@@ -143,15 +141,12 @@ class SignUpFragment : Fragment(), View.OnClickListener {
         val name = signup_name.text.toString()
         val email = signup_email.text.toString()
         val password = signup_password.text.toString()
-        viewModel.signUp(name, email, password, contentUri).observe(viewLifecycleOwner, Observer {
-            it.onSuccess {
-                progressbar.hide()
-            }
-            it.onFailure {
-                progressbar.show()
-            }
+        if(viewModel.signUp(name, email, password, contentUri)){
+            context!!.showToast("Sign up successful")
+            startActivity(Intent(context, GalleryActivity::class.java))
+            activity!!.finish()
 
-        })
+        }
     }
 
     private fun setObservers() {
@@ -167,17 +162,6 @@ class SignUpFragment : Fragment(), View.OnClickListener {
         viewModel.getError().observe(viewLifecycleOwner, Observer {
             context!!.showToast(it)
         })
-        viewModel.getSignUpStatus().observe(viewLifecycleOwner, Observer {
-            when (it) {
-                SignUpViewModel.SignupStatus.SHOW_PROGRESS -> progressbar.show()
-                SignUpViewModel.SignupStatus.HIDE_PROGRESS -> progressbar.hide()
-                SignUpViewModel.SignupStatus.GO_TO_HOMEPAGE -> {
-                    startActivity(Intent(context, GalleryActivity::class.java))
-                    activity!!.finish()
-                }
-            }
-        })
-
     }
 }
 

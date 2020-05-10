@@ -17,8 +17,6 @@ class SignUpViewModel(val context: Application) : AndroidViewModel(context) {
     private var passwordError = MutableLiveData<String>()
     private var nameError = MutableLiveData<String>()
     private var errMessage = MutableLiveData<String>()
-
-    private val signupStatus = MediatorLiveData<SignupStatus>()
     private val patternEmail = "^[a-zA-Z0-9_!#\$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\$"
     private val patternPassword = "^(?=.*\\d).{6,16}\$"
     //(?=.*d)         : This matches the presence of at least one digit i.e. 0-9.
@@ -37,9 +35,7 @@ class SignUpViewModel(val context: Application) : AndroidViewModel(context) {
         return passwordError
     }
 
-    fun getSignUpStatus(): LiveData<SignupStatus> {
-        return signupStatus
-    }
+
 
     fun getError(): LiveData<String> {
         return errMessage
@@ -81,37 +77,19 @@ class SignUpViewModel(val context: Application) : AndroidViewModel(context) {
         }
     }
 
-    fun signUp(name: String, email: String, password: String, userImage: Uri?): LiveData<Result<Boolean>> {
-        val result: MutableLiveData<Result<Boolean>> = MutableLiveData()
+    fun signUp(name: String, email: String, password: String, userImage: Uri?): Boolean {
         if (!(context.isNetworkAvailable())) {
             errMessage.value = "Network not available"
+            return false
         } else if (!validateName(name) || !validateEmail(email) || !validatePassword(password)) {
+            return false
         } else {
-            signupStatus.value = SignupStatus.SHOW_PROGRESS
-            signupStatus.addSource(repository.signUp(name, email, password, userImage), Observer {
-                it.onSuccess {
-                    result.value = Result.success(it)
-                    signupStatus.value = SignupStatus.HIDE_PROGRESS
-                    signupStatus.value = SignupStatus.GO_TO_HOMEPAGE
-                }
-                it.onFailure {
-                    result.value = Result.failure(it)
-                    errMessage.value = it.toString()
-                    signupStatus.value = SignupStatus.HIDE_PROGRESS
-                }
-            })
+            return repository.signUp(name, email, password, userImage)
         }
-        return result
     }
 
 
-    enum class SignupStatus {
-        SHOW_PROGRESS,
-        HIDE_PROGRESS,
-        GO_TO_HOMEPAGE,
 
-
-    }
 
 }
 
