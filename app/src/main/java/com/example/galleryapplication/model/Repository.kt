@@ -28,8 +28,6 @@ class Repository {
 
         return result
     }
-
-
     fun passwordReset(email: String) =  firebaseModel.passwordReset(email)
 
     fun fetchUserDetails() = firebaseModel.fetchUserDetails()

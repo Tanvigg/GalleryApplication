@@ -154,8 +154,6 @@ class SignUpFragment : Fragment(), View.OnClickListener {
         })
     }
 
-
-
     private fun setObservers() {
         viewModel.getEmailError().observe(viewLifecycleOwner, Observer {
             signup_email.error = it

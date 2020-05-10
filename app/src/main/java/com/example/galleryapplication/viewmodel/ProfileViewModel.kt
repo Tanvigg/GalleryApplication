@@ -24,19 +24,9 @@ class ProfileViewModel(val context: Application) : AndroidViewModel(context) {
 
 
     fun fetchUserDetails(): Task<DocumentSnapshot> {
-        if (!(context.isNetworkAvailable())) {
-            errMessage.value = "Network not available"
-        }
-        profileStatus.value = ProfileStatus.SHOW_PROGRESS
-        return repository.fetchUserDetails().addOnSuccessListener {
-            profileStatus.value = ProfileStatus.HIDE_PROGRESS
-        }
-            .addOnFailureListener {
-                errMessage.value = it.toString()
-                profileStatus.value = ProfileStatus.HIDE_PROGRESS
-
-            }
+        return repository.fetchUserDetails()
     }
+
 
     fun updateUserProfile(selectedPhotoUri: Uri?) {
         if (!(context.isNetworkAvailable())) {

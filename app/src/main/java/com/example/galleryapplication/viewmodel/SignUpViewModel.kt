@@ -3,10 +3,13 @@ package com.example.galleryapplication.viewmodel
 import android.app.Application
 import android.net.Uri
 import android.text.TextUtils
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.example.galleryapplication.model.Repository
 import com.example.galleryapplication.model.isNetworkAvailable
-import com.google.android.gms.tasks.Task
 
 class SignUpViewModel(val context: Application) : AndroidViewModel(context) {
     private val repository = Repository()
@@ -101,10 +104,12 @@ class SignUpViewModel(val context: Application) : AndroidViewModel(context) {
         return result
     }
 
+
     enum class SignupStatus {
         SHOW_PROGRESS,
         HIDE_PROGRESS,
         GO_TO_HOMEPAGE,
+
 
     }
 

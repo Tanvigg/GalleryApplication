@@ -2,7 +2,6 @@ package com.example.galleryapplication.model
 
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.galleryapplication.R
 import com.google.android.gms.tasks.OnCompleteListener
@@ -65,6 +64,7 @@ class FirebaseModel {
         val result = MutableLiveData<Result<Boolean>>()
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener {
+                currentUserId = auth.uid.toString()
                 uploadUser(userImage, name, email)
                 result.value = Result.success(true)
             }
@@ -81,7 +81,6 @@ class FirebaseModel {
             userImage1 =
                 Uri.parse("android.resource://com.example.galleryapplication/" + R.drawable.profile_image)
         }
-        currentUserId = auth.uid.toString()
         Log.d("id", currentUserId)
 
         userProfileImageRef = FirebaseStorage.getInstance().reference.child("Profile Images")
@@ -131,6 +130,7 @@ class FirebaseModel {
 
 
 
+
     fun passwordReset(email: String): Task<Void> {
         val fAuth: Task<Void> = auth.sendPasswordResetEmail(email)
         return fAuth
@@ -141,10 +141,8 @@ class FirebaseModel {
 
     fun fetchUserDetails(): Task<DocumentSnapshot> {
         currentUserId = auth.uid.toString()
-        Log.d("id", currentUserId)
-        val documentReference: Task<DocumentSnapshot> =
-            db.collection("users").document(currentUserId).get()
-        return documentReference
+        return db.collection("users").document(currentUserId).get()
+
     }
 
 

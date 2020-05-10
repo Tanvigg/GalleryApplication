@@ -107,18 +107,22 @@ class ProfileFragment : Fragment(), View.OnClickListener {
 
 
     private fun fetchUserDetails() {
+        loadingDialog!!.startLoadingDialog("Setting Profile","please wait,while we are getting your details...")
         viewModel.fetchUserDetails().addOnSuccessListener { document ->
+            Log.d("doc",document.toString())
             if (document != null) {
                 userName.setText(document.get("Name").toString())
                 userName.isEnabled = false
                 userEmail.setText(document.get("Email").toString())
                 userEmail.isEnabled = false
                 Picasso.get().load(document.get("ProfileImage").toString()).into(userProfileImage)
+                loadingDialog!!.dismissDialog()
             }else{
                 Log.e("NO DOCUMENT", "No such document")
             }
         }
             .addOnFailureListener {
+                Log.e("Failed", "get failed with ", it)
                 context!!.showToast("Unable to fetch user details, please try again later.")
             }
     }
