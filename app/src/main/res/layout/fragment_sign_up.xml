@@ -7,7 +7,7 @@
     android:background="@color/App_theme_color"
     android:fillViewport="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="SignUpFragment">
+    tools:context=".view.fragment.SignUpFragment">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"

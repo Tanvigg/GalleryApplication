@@ -25,17 +25,19 @@
             app:civ_border_color="#D8D6D6"
             app:civ_border_width="2dp" />
 
-        <!--<com.wang.avi.AVLoadingIndicatorView
-            android:id="@+id/BallSpinFadeLoader"
-            android:layout_width="wrap_content"
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/ballSpinFadeLoader"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="visible"
+            android:layout_width="wrap_content"
             app:indicator="BallSpinFadeLoader"
-            app:indicator_color="#ffffff" />-->
+            app:indicator_color="#ffffff"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            />
     </FrameLayout>
 
     <TextView
+        android:id="@+id/change_profile_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/montserrat"
