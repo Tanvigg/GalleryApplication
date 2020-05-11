@@ -17,6 +17,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -170,9 +171,19 @@ class ProfileFragment : Fragment(), View.OnClickListener {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun choosePhotoFromGallery() {
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent, GALLERY)
+        if (context?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                arrayOf(
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                ), 5
+            )
+        } else {
+            val galleryIntent =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(galleryIntent, GALLERY)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -190,6 +201,41 @@ class ProfileFragment : Fragment(), View.OnClickListener {
             startActivityForResult(cameraIntent, CAMERA_REQUEST)
         }
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == MY_CAMERA_PERMISSION_REQUEST) {
+            if (grantResults.size > 0) {
+                val cameraPermission: Boolean = grantResults[0] == PackageManager.PERMISSION_GRANTED
+                val readExternalStorage: Boolean =
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED
+                val writeExternalStorage: Boolean =
+                    grantResults[2] == PackageManager.PERMISSION_GRANTED
+
+                if (cameraPermission && readExternalStorage && writeExternalStorage) {
+                    Toast.makeText(context, "All permission granted", Toast.LENGTH_SHORT).show()
+                    val cameraIntent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST)
+                }
+            }
+        }
+        else if (requestCode == 5) {
+            val galleryPermission: Boolean = grantResults[0] == PackageManager.PERMISSION_GRANTED
+            if (galleryPermission) {
+                context!!.showToast("Gallery Permission granted")
+                val galleryIntent =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(galleryIntent, GALLERY)
+
+            }
+        }
+    }
+
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

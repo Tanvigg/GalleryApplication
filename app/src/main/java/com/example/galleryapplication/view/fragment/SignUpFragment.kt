@@ -75,9 +75,19 @@ class SignUpFragment : Fragment(), View.OnClickListener {
         builder.show()
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun choosePhotoFromGallery() {
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent, GALLERY)
+        if (context?.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                arrayOf(
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                ), 5
+            )
+        } else {
+            val galleryIntent =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(galleryIntent, GALLERY)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -117,7 +127,19 @@ class SignUpFragment : Fragment(), View.OnClickListener {
                     startActivityForResult(cameraIntent, CAMERA_REQUEST)
                 }
             }
-        } }
+        }
+        else if (requestCode == 5) {
+            val galleryPermission: Boolean = grantResults[0] == PackageManager.PERMISSION_GRANTED
+            if (galleryPermission) {
+                context!!.showToast("Gallery Permission granted")
+                val galleryIntent =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(galleryIntent, GALLERY)
+
+            }
+        }
+
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
